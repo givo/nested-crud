@@ -1,4 +1,4 @@
+.vs/
+node_modules/
 /src
-/.vs
-tsconfig.json
 gulpfile.js
