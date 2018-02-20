@@ -13,10 +13,12 @@ gulp.task("default", ["scripts", "watch"], () => {
 });
 
 gulp.task('scripts', function(){    
-    return tsProject.src()
-    .pipe(tsProject())    
-    .js.pipe(gulp.dest(paths.dist));
-})
+    let tsResult = tsProject.src()
+    .pipe(tsProject());
+
+    tsResult.js.pipe(gulp.dest(paths.dist));
+    tsResult.pipe(gulp.dest(paths.dist));
+});
 
 gulp.task('watch', function(){
     gulp.watch(paths.scripts, ['scripts']);
