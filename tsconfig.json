@@ -1,9 +1,9 @@
 {
-  "include": [
-    "src/*.ts",
+  "include": [    
     "src/**/*.ts"        
   ],
   "compilerOptions": {
+    "declaration": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
     "strictNullChecks": true,
