@@ -1,0 +1,23 @@
+{
+  "name": "cruder",
+  "version": "0.0.0",
+  "description": "Create a REST crud interface for your resources",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab.pituah.iaf/matan/cruder.git"
+  },
+  "keywords": [
+    "crud",
+    "rest",
+    "typescript",
+    "node",
+    "http",
+    "express"
+  ],
+  "author": "Matan Givoni",
+  "license": "ISC"
+}
