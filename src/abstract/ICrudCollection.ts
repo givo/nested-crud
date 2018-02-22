@@ -1,4 +1,5 @@
 import { IDescriptor } from "./IDescriptor";
+import { IFilterParam } from "./IFilterParam";
 
 export interface ICrudCollection {
     /**
@@ -16,7 +17,7 @@ export interface ICrudCollection {
      * @returns {Promise<Array<IDescriptor>>} 
      * @memberof ICrudCollection
      */
-    read(filter: any, limit: number): Promise<Array<IDescriptor>>;
+    read(limit?: number, filter?: Array<IFilterParam>): Promise<Array<IDescriptor>>;
 
     /**
      * Returns the item that is represented by the specified `id`.
