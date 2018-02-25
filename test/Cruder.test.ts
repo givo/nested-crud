@@ -21,20 +21,20 @@ describe("REST Collections", () => {
     before(async () => {     
         allUsers = await usersManager.readMany();
         
-        cruder.parentCollection('/users', usersManager);
-
-        let usersREST = cruder.listen('/users/:userId');
-
+        let usersREST = cruder.listen('/users/:userId', usersManager);
         app.use(usersREST);
 
         app.listen(3000);
     });
     
+    //
+    // get /users
+    //
     describe(("/users"), () => {
         it('should return all users', function(done) {
             this.timeout(10000);
 
-            http.get('http://127.0.0.1:3000/', (res) => {
+            http.get('http://127.0.0.1:3000/users', (res) => {
                 expect(res.statusCode).to.equal(200);
 
                 let body = '';
@@ -44,15 +44,45 @@ describe("REST Collections", () => {
 
                 res.on('end', () => {
                     try{
-                        let users = JSON.parse(body);
-
-                        expect(users).to.equal(allUsers);
+                        expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(allUsers));
+                        done();
                     }
                     catch(err){
+                        console.log(12312);
                         assert.fail(err);
                     }
                 });
             });
+        });
+    });
+
+    //
+    // get /users/1
+    //
+    describe(("/users/1"), () => {
+        it('should return user with id: 1', function(done) {
+            this.timeout(10000);
+
+            http.get('http://127.0.0.1:3000/users/1', (res) => {
+                expect(res.statusCode).to.equal(200);
+
+                let body = '';
+                res.on('data', (data) =>{
+                    body += data;
+                });
+
+                res.on('end', () => {
+                    try{
+                        let user1 = usersManager.readById((1).toString());
+                        expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(user1));
+                        done();
+                    }
+                    catch(err){
+                        console.log(12312);
+                        assert.fail(err);
+                    }
+                });
+            });            
         });
     });
 });
