@@ -4,7 +4,7 @@ var ts = require("gulp-typescript");
 var tsProject = ts.createProject("tsconfig.json");
 
 var paths = {
-    scripts: [ "src/*.ts", "src/**/*.ts" ],
+    scripts: [ "src/**/*.ts", "test/**/*.ts" ],
     dist: "dist"
 }
 
