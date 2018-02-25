@@ -34,7 +34,7 @@ export class Cruder {
         if (urlSplit.length < 2) {
             throw `${url} - bad format, url is needed at least one '/'`;
         }        
-        if (!this._parentCollections.has(urlSplit[1])) {
+        if (!this._parentCollections.has('/' + urlSplit[1])) {
             throw `${url} - must register ${urlSplit[1]} before registering any sub collections`;
         }
         parentCollection = <ICrudCollection>this._parentCollections.get(urlSplit[1]);
@@ -45,14 +45,14 @@ export class Cruder {
         // get all sub collections before every request
         router.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             // append `cruderCollections` member to `req`
-            (<any>req).cruderCollections = {};            
+            (<any>req).cruder = {};            
 
             // get each collection from it's parent and add it to `cruderCollections`
             let currentSubCollection: any = parentCollection;
             for (let i = 1; i < urlSplit.length; i += 2) {
                 let currentCollectionName: string = urlSplit[i];
-                // append current collection to req `req.cruderCollection.'collectionName'`
-                (<any>req).cruderCollections[urlSplit[i]] = currentSubCollection;
+                // append current collection to req `req.cruder.'collectionName'`
+                (<any>req).cruder[urlSplit[i]] = currentSubCollection;
 
                 if(i + 1 < urlSplit.length){
                     // get item's id 
@@ -64,22 +64,23 @@ export class Cruder {
                         res.json({ message: "item doesn't exist"});
                     }
 
-                    // get next sub collection    
+                    // if item contains the desired collection, get it    
                     if(item.getCollection){
                         currentSubCollection = item.getCollection(item);                        
                     }
                 }
             }
 
-            // if reached to last collection save as `req.cruderCollection.collection`
-            (<any>req).cruderCollections.collection = currentSubCollection;
+            // save the desired item and the last collection in `req.cruder`
+            (<any>req).cruder.lastCollection = currentSubCollection;
+            (<any>req).cruder.lastItem = currentSubCollection;
 
             next();
         });
 
         //
-        // get all 
-        //
+        // get many 
+        // 
         router.get(url.replace(`/${paramId}`, ''), async (req: express.Request, res: express.Response) => {
             let limit: number = 0;
             let filter: Array<IFilterParam>;
@@ -92,7 +93,7 @@ export class Cruder {
             filter = queryFilter(req);
 
             try {
-                let item: Array<IDescriptor> = await (<any>req).cruderCollection.collection.read(limit, filter);
+                let item: Array<IDescriptor> = await (<any>req).cruder.lastCollection.read(limit, filter);
             }
             catch (err) {
                 res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -103,11 +104,11 @@ export class Cruder {
         //
         // get
         //
-        router.get(url, async (req: express.Request, res: express.Response) => {
+        router.get(url, (req: express.Request, res: express.Response) => {
             let itemId: string = req.params[paramId];
 
             try {
-                let item: IDescriptor = await (<any>req).cruderCollection.collection.readById(itemId);
+                let item: IDescriptor = (<any>req).cruder.lastItem;
                 res.status(HttpStatus.OK).json(item.describe());
             }
             catch (err) {
@@ -117,14 +118,14 @@ export class Cruder {
         });
 
         //
-        // put
+        // put by id
         //
         router.put(url, async (req: express.Request, res: express.Response) => {
             let itemId: string = req.params[paramId];
             let item: any = req.body;
 
             try {
-                let updatedItem: IDescriptor = await (<any>req).cruderCollection.collection.update(itemId, item);
+                let updatedItem: IDescriptor = await (<any>req).cruder.lastCollection.update(itemId, item);
                 res.send(updatedItem.describe());
             }
             catch (err) {
@@ -140,7 +141,7 @@ export class Cruder {
             let item: any = req.body;
 
             try {
-                let id: string = await (<any>req).cruderCollection.collection.create(item);
+                let id: string = await (<any>req).cruder.lastCollection.create(item);
                 res.json({ id: id });
             }
             catch (err) {
@@ -156,7 +157,7 @@ export class Cruder {
             let id: string = req.params[paramId];
 
             try {
-                let deletedItem = await (<any>req).cruderCollection.collection.delete(id);
+                let deletedItem = await (<any>req).cruder.lastCollection.delete(id);
                 res.json(deletedItem);
             }
             catch (err) {
@@ -166,7 +167,7 @@ export class Cruder {
         });
 
         //
-        // delete
+        // delete many
         //
         router.delete(url, async (req: express.Request, res: express.Response) => {
             let limit: number = 0;
@@ -180,7 +181,7 @@ export class Cruder {
             filter = queryFilter(req);
 
             try {
-                let deletedItem = await (<any>req).cruderCollection.collection.delete(limit, filter);
+                let deletedItem = await (<any>req).cruder.lastCollection.delete(limit, filter);
                 res.json(deletedItem);
             }
             catch (err) {
