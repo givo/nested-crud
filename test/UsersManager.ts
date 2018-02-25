@@ -1,4 +1,4 @@
-import { IFilterParam, IDescriptor, FilterOperators, ICrudCollection } from '../src/index';
+import { IParam, IDescriptor, FilterOperators, ICrudCollection } from '../src/index';
 import { User } from './User';
 
 export class UsersManager implements ICrudCollection{    
@@ -13,11 +13,11 @@ export class UsersManager implements ICrudCollection{
     async create(item: any): Promise<string> {
         this._users.set((UsersManager.UsersId++).toString(), item);
 
-        return (UsersManager.UsersId++).toString();
+        return (UsersManager.UsersId).toString();
     }
 
     // return all
-    async readMany(limit?: number, filter?: IFilterParam[]): Promise<IDescriptor[]> {
+    async readMany(limit?: number, filter?: IParam[]): Promise<IDescriptor[]> {
         let users = new Array<User>();
 
         this._users.forEach((user, userId) => {
@@ -32,7 +32,7 @@ export class UsersManager implements ICrudCollection{
     }
 
     // update all
-    async updateMany(fields: IFilterParam[], limit?: number, filter?: IFilterParam[]): Promise<number> {
+    async updateMany(fields: IParam[], limit?: number, filter?: IParam[]): Promise<number> {
         let updateCount = 0;
 
         this._users.forEach((user, userId) => {
