@@ -1,7 +1,7 @@
 import { FilterOperators } from "./FilterOperators";
 
-export interface IFilterParam{
+export interface IParam{
     fieldName: string;
-    operator: FilterOperators;
     value: any;
+    operator: FilterOperators;
 }

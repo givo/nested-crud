@@ -1,5 +1,5 @@
 import { IDescriptor } from "./IDescriptor";
-import { IFilterParam } from "./IFilterParam";
+import { IParam } from "./IParam";
 
 export interface ICrudCollection {
     /**
@@ -17,7 +17,7 @@ export interface ICrudCollection {
      * @returns {Promise<Array<IDescriptor>>} 
      * @memberof ICrudCollection
      */
-    readMany(limit?: number, filter?: Array<IFilterParam>): Promise<Array<IDescriptor>>;
+    readMany(limit?: number, filter?: Array<IParam>): Promise<Array<IDescriptor>>;
 
     /**
      * Returns the item that is represented by the specified `id`.
@@ -31,13 +31,13 @@ export interface ICrudCollection {
     /**
      * Updates all the items who match the given filter
      * 
-     * @param {Array<IFilterParam>} fields 
+     * @param {Array<IParam>} fields 
      * @param {number} [limit] 
-     * @param {Array<IFilterParam>} [filter] 
+     * @param {Array<IParam>} [filter] 
      * @returns {Promise<number>} 
      * @memberof ICrudCollection
      */
-    updateMany(fields: Array<IFilterParam>, limit?: number, filter?: Array<IFilterParam>): Promise<number>;
+    updateMany(fields: Array<IParam>, limit?: number, filter?: Array<IParam>): Promise<number>;
 
     /**
      * Updates the item represeted by the specified `id`.
