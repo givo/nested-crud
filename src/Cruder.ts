@@ -165,17 +165,17 @@ export class Cruder {
             let filter: Array<IParam>;
             let fields: Array<IParam>;            // TODO: take fields from req
 
-            // set limit
+            // get limit
             if ((<any>req.param).limit) {
                 limit = (<any>req.param).limit;
             }
-            // set filter
+            // get filter
             filter = queryFilter(req);
-            // set fields
-            fields = [];
+            // get fields
+            fields = req.body;
 
             try {
-                let updated: IDescriptor = await (<any>req).cruder.lastCollection.updateMany(fields, filter, limit);
+                let updated: number = await (<any>req).cruder.lastCollection.updateMany(fields, filter, limit);
                 res.json({ count: updated });
             }
             catch (err) {
