@@ -6,6 +6,7 @@ import { IDescriptor } from './abstract/IDescriptor';
 import { ICrudItem } from './abstract/ICrudItem';
 import { queryFilter } from './QueryStringFilter';
 import { IParam } from './abstract/IParam';
+import * as bodyParser from 'body-parser';
 
 
 export class Cruder {
@@ -41,8 +42,10 @@ export class Cruder {
             }
         }
 
+        router.use(bodyParser.json());
+
         // get name of the item id of the last collection in the url template 
-        paramId = urlSplit[urlSplit.length - 1];
+        paramId = urlSplit[urlSplit.length - 1].replace(':', '');
 
         //
         // add `parentCollection` to req.cruder on requests to root path
@@ -70,7 +73,7 @@ export class Cruder {
                 let currentCollectionName: string = urlSplit[i];
                 (<any>req).cruder[urlSplit[i]] = currentSubCollection;
 
-                // if(i + 1 < urlSplit.length){                    
+                // if(i + 1 < urlSplit.length){
 
                 // if `itemId` is provided get the item
                 let itemId: string = req.params[urlSplit[i + 1].replace(':', '')];
@@ -99,90 +102,6 @@ export class Cruder {
         });
 
         //
-        // get many 
-        // 
-        router.get(url.replace(`/${paramId}`, ''), async (req: express.Request, res: express.Response) => {
-            let limit: number = Cruder.DefaultLimit;
-            let filter: Array<IParam>;
-
-            // set limit
-            if ((<any>req.param).limit) {
-                limit = (<any>req.param).limit;
-            }
-            // set filter
-            filter = queryFilter(req);
-
-            try {
-                let items: Array<IDescriptor> = await (<any>req).cruder.lastCollection.readMany(limit, filter);
-                res.json(items);
-            }
-            catch (err) {
-                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-                res.json(err);
-            }
-        });
-
-        //
-        // get by id
-        //
-        router.get(url, (req: express.Request, res: express.Response) => {
-            let itemId: string = req.params[paramId];
-
-            try {
-                let item: IDescriptor = (<any>req).cruder.lastItem;
-                res.status(HttpStatus.OK).json(item.describe());
-            }
-            catch (err) {
-                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-                res.json(err);
-            }
-        });
-
-        //
-        // update many
-        //
-        router.put(url, async (req: express.Request, res: express.Response) => {
-            let limit: number = Cruder.DefaultLimit;
-            let filter: Array<IParam>;
-            let fields: Array<IParam>;            // TODO: take fields from req
-
-            // set limit
-            if ((<any>req.param).limit) {
-                limit = (<any>req.param).limit;
-            }
-            // set filter
-            filter = queryFilter(req);
-            // set fields
-            fields = [];
-
-            try {
-                let updated: IDescriptor = await (<any>req).cruder.lastCollection.updateMany(fields, filter, limit);
-                res.send({ count: updated });
-            }
-            catch (err) {
-                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-                res.json(err)
-            }
-        });
-
-        //
-        // update by id
-        //
-        router.put(url, async (req: express.Request, res: express.Response) => {
-            let itemId: string = req.params[paramId];
-            let item: any = req.body;
-
-            try {
-                let updatedItem: IDescriptor = await (<any>req).cruder.lastCollection.update(itemId, item);
-                res.send(updatedItem.describe());
-            }
-            catch (err) {
-                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-                res.json(err)
-            }
-        });
-
-        //
         // create
         //
         router.post(url, async (req: express.Request, res: express.Response) => {
@@ -199,25 +118,93 @@ export class Cruder {
         });
 
         //
-        // delete by id
-        //
-        router.delete(url, async (req: express.Request, res: express.Response) => {
-            let id: string = req.params[paramId];
+        // read many 
+        // 
+        router.get(url.replace(`/:${paramId}`, ''), async (req: express.Request, res: express.Response) => {
+            let limit: number = Cruder.DefaultLimit;
+            let filter: Array<IParam>;
+
+            // set limit
+            if ((<any>req.param).limit) {
+                limit = (<any>req.param).limit;
+            }
+            // set filter
+            filter = queryFilter(req);
 
             try {
-                let deletedItem = await (<any>req).cruder.lastCollection.delete(id);
-                res.json(deletedItem);
+                let items: Array<IDescriptor> = await (<any>req).cruder.lastCollection.readMany(limit, filter);
+                res.json(items.map((item, i) => {
+                    return item.describe();
+                }));
             }
             catch (err) {
                 res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
                 res.json(err);
-            };
+            }
+        });
+
+        //
+        // read by id
+        //
+        router.get(url, (req: express.Request, res: express.Response) => {
+            try {
+                let item: IDescriptor = (<any>req).cruder.lastItem;
+                res.json(item.describe());
+            }
+            catch (err) {
+                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+                res.json(err);
+            }
+        });
+
+        //
+        // update many
+        //
+        router.put(url.replace(`/:${paramId}`, ''), async (req: express.Request, res: express.Response) => {
+            let limit: number = Cruder.DefaultLimit;
+            let filter: Array<IParam>;
+            let fields: Array<IParam>;            // TODO: take fields from req
+
+            // set limit
+            if ((<any>req.param).limit) {
+                limit = (<any>req.param).limit;
+            }
+            // set filter
+            filter = queryFilter(req);
+            // set fields
+            fields = [];
+
+            try {
+                let updated: IDescriptor = await (<any>req).cruder.lastCollection.updateMany(fields, filter, limit);
+                res.json({ count: updated });
+            }
+            catch (err) {
+                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+                res.json(err)
+            }
+        });
+
+        //
+        // update by id
+        //
+        router.put(url, async (req: express.Request, res: express.Response) => {            
+            let fields: any = req.body;
+            let itemId: string = req.params[paramId];
+
+            try {
+                let updatedItem: IDescriptor = await (<any>req).cruder.lastCollection.updateById(itemId, fields);
+                res.json(updatedItem.describe());
+            }
+            catch (err) {
+                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+                res.json(err)
+            }
         });
 
         //
         // delete many
         //
-        router.delete(url, async (req: express.Request, res: express.Response) => {
+        router.delete(url.replace(`/:${paramId}`, ''), async (req: express.Request, res: express.Response) => {
             let limit: number = 0;
             let filter: Array<IParam>;
 
@@ -230,6 +217,22 @@ export class Cruder {
 
             try {
                 let deletedItem = await (<any>req).cruder.lastCollection.delete(limit, filter);
+                res.json(deletedItem);
+            }
+            catch (err) {
+                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+                res.json(err);
+            };
+        });
+
+        //
+        // delete by id
+        //
+        router.delete(url, async (req: express.Request, res: express.Response) => {
+            let id: string = req.params[paramId];
+
+            try {
+                let deletedItem = await (<any>req).cruder.lastCollection.delete(id);
                 res.json(deletedItem);
             }
             catch (err) {
