@@ -139,10 +139,12 @@ describe("Curder - Collections", () => {
                 expect(res.statusCode).to.equal(200);
 
                 let body = await getBody(res);
-                let updatedUsers = JSON.parse(body);
+                let updatedUsers = JSON.parse(body).count;
 
-                for(let i = 0; i < updatedUsers.length; i++){
-                    expect(updatedUsers[i], `Received unexpected user. received: ${updatedUsers}`).to.equal(JSON.stringify(allUsers[i]));
+                expect(updatedUsers, "4 users were updated").to.equal(4);
+
+                for(let i = 0; i < updatedUsers; i++){
+                    expect(allUsers[i].height, `User: \"${allUsers[i].name}\" wasn't updated`).to.equal(300);
                 }
             }).write(bodyString);
         });
