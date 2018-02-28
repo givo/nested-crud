@@ -14,6 +14,8 @@ export interface ICrudCollection {
     /**
      * Returns all the items who match the specified `filter` and limits the number of returned item to `limit`.
      * 
+     * @param {number} [limit] 
+     * @param {Array<IParam>} [filter] 
      * @returns {Promise<Array<IDescriptor>>} 
      * @memberof ICrudCollection
      */
@@ -31,23 +33,23 @@ export interface ICrudCollection {
     /**
      * Updates all the items who match the given filter
      * 
-     * @param {Array<IParam>} fields 
+     * @param {Array<IParam>} fields The fields to update
      * @param {number} [limit] 
      * @param {Array<IParam>} [filter] 
      * @returns {Promise<number>} 
      * @memberof ICrudCollection
      */
-    updateMany(fields: Array<IParam>, limit?: number, filter?: Array<IParam>): Promise<number>;
+    updateMany(fields: any, limit?: number, filter?: Array<IParam>): Promise<number>;
 
     /**
      * Updates the item represeted by the specified `id`.
      * 
      * @param {string} id 
-     * @param {*} item 
+     * @param {*} fields The fields to update
      * @returns {Promise<IDescriptor>} The updated item
      * @memberof ICrudCollection
      */
-    updateById(id: string, item: any): Promise<IDescriptor>;
+    updateById(id: string, fields: any): Promise<IDescriptor>;
 
     /**
      * Deletes the item represeted by the specified `id`
@@ -56,12 +58,15 @@ export interface ICrudCollection {
      * @returns {Promise<number>} `1` if the item was deleted, otherwise `0`
      * @memberof ICrudCollection
      */
-    deleteById(id: string): Promise<number>;
+    deleteById(id: string): Promise<IDescriptor>;
 
     /**
      * Deletes all the items who the match the specified `filter` and the limits the deletion to `limit` items.
      * 
+     * @param {number} limit 
+     * @param {Array<IParam>} filter 
+     * @returns {Promise<any>} The deleted item
      * @memberof ICrudCollection
      */
-    delete(filter: any, limit: number): Promise<number>;
+    delete(limit: number, filter: Array<IParam>): Promise<number>;
 }
