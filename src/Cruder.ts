@@ -80,7 +80,7 @@ export class Cruder {
                 if (itemId) {
                     currentItem = await currentSubCollection.readById(itemId);
                     if (!currentItem) {
-                        res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+                        res.statusCode = HttpStatus.NOT_FOUND;
                         res.json({ message: "item doesn't exist" });
                         return;
                     }
@@ -104,7 +104,7 @@ export class Cruder {
         //
         // create
         //
-        router.post(url, async (req: express.Request, res: express.Response) => {
+        router.post(url.replace(`/:${paramId}`, ''), async (req: express.Request, res: express.Response) => {
             let item: any = req.body;
 
             try {
@@ -187,7 +187,7 @@ export class Cruder {
         //
         // update by id
         //
-        router.put(url, async (req: express.Request, res: express.Response) => {            
+        router.put(url, async (req: express.Request, res: express.Response) => {
             let fields: any = req.body;
             let itemId: string = req.params[paramId];
 
@@ -216,8 +216,8 @@ export class Cruder {
             filter = queryFilter(req);
 
             try {
-                let deletedItem = await (<any>req).cruder.lastCollection.delete(limit, filter);
-                res.json(deletedItem);
+                let deleted = await (<any>req).cruder.lastCollection.delete(limit, filter);
+                res.json({ count: deleted });
             }
             catch (err) {
                 res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -232,7 +232,7 @@ export class Cruder {
             let id: string = req.params[paramId];
 
             try {
-                let deletedItem = await (<any>req).cruder.lastCollection.delete(id);
+                let deletedItem = await (<any>req).cruder.lastCollection.deleteById(id);
                 res.json(deletedItem);
             }
             catch (err) {
