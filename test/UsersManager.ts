@@ -1,19 +1,21 @@
 import { IParam, IDescriptor, FilterOperators, ICrudCollection } from '../src/index';
 import { User } from './User';
 
-export class UsersManager implements ICrudCollection{    
+export class UsersManager implements ICrudCollection {
     private static UsersId = 0;
 
     private _users: Map<string, User>;
 
-    constructor(){
+    constructor() {
         this._users = new Map<string, User>();
     }
 
     async create(item: any): Promise<string> {
-        this._users.set((UsersManager.UsersId++).toString(), item);
+        let userId = UsersManager.UsersId.toString();
 
-        return (UsersManager.UsersId).toString();
+        this._users.set((UsersManager.UsersId++).toString(), <User>item);
+
+        return userId;
     }
 
     // return all
@@ -43,29 +45,29 @@ export class UsersManager implements ICrudCollection{
         return updateCount;
     }
 
-    async updateById(id: string, item: any): Promise<any> {
+    async updateById(id: string, item: any): Promise<IDescriptor> {
         let user = <User>this._users.get(id);
 
-        if(user){            
-            user.update(item);            
+        if (user) {
+            user.update(item);
         }
 
         return user;
     }
 
-    async deleteById(id: string): Promise<number> {
-        let deleted = 0;
+    async deleteById(id: string): Promise<IDescriptor> {
+        let deletedUser = <User>this._users.get(id);
 
-        deleted = + this._users.delete(id);
+        this._users.delete(id);
 
-        return deleted;
+        return deletedUser;
     }
 
-    async delete(filter: any, limit: number): Promise<number> {
+    async delete(limit: number, filter: IParam[]): Promise<number> {
         let deleted = this._users.size;
-        
+
         this._users.clear();
 
         return deleted;
-    }    
+    }
 }
