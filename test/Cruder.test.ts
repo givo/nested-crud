@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as express from 'express';
-import {UsersManager} from './UsersManager';
+import { UsersManager } from './UsersManager';
 import { Cruder } from '../src/index';
 import { User } from './User';
 import * as http from 'http';
@@ -27,19 +27,19 @@ describe("Curder - Collections", () => {
 
         app.listen(3000);
     });
-    
+
     //
     // get /users
     //
     describe(("/users"), () => {
-        it('should return all users', function(done) {
+        it('should return all users', function (done) {
             this.timeout(10000);
 
             http.get('http://127.0.0.1:3000/users', (res) => {
                 expect(res.statusCode).to.equal(200);
 
                 let body = '';
-                res.on('data', (data) =>{
+                res.on('data', (data) => {
                     body += data;
                 });
 
@@ -55,14 +55,14 @@ describe("Curder - Collections", () => {
     // get /users/1
     //
     describe(("get /users/1"), () => {
-        it('should return user with id: 1', function(done) {
+        it('should return user with id: 1', function (done) {
             this.timeout(10000);
 
             http.get('http://127.0.0.1:3000/users/1', (res) => {
                 expect(res.statusCode).to.equal(200);
 
                 let body = '';
-                res.on('data', (data) =>{
+                res.on('data', (data) => {
                     body += data;
                 });
 
@@ -71,7 +71,7 @@ describe("Curder - Collections", () => {
                     expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(user1));
                     done();
                 });
-            });            
+            });
         });
     });
 
@@ -79,7 +79,7 @@ describe("Curder - Collections", () => {
     // update /users/1
     //
     describe(("put /users/1"), () => {
-        it('should update user with id: 1', async function() {
+        it('should update user with id: 1', async function () {
             this.timeout(10000);
 
             let user1 = await usersManager.readById((1).toString());
@@ -102,7 +102,7 @@ describe("Curder - Collections", () => {
                 expect(res.statusCode).to.equal(200);
 
                 let body = '';
-                res.on('data', (data) =>{
+                res.on('data', (data) => {
                     body += data;
                 });
 
@@ -117,7 +117,7 @@ describe("Curder - Collections", () => {
     // update all
     //
     describe(("put /users"), () => {
-        it('should update user with id: 1', async function() {
+        it('should update user with id: 1', async function () {
             this.timeout(10000);
 
             let bodyString = JSON.stringify({
@@ -143,22 +143,108 @@ describe("Curder - Collections", () => {
 
                 expect(updatedUsers, "4 users were updated").to.equal(4);
 
-                for(let i = 0; i < updatedUsers; i++){
+                for (let i = 0; i < updatedUsers; i++) {
                     expect(allUsers[i].height, `User: \"${allUsers[i].name}\" wasn't updated`).to.equal(300);
                 }
             }).write(bodyString);
         });
     });
+
+    //
+    // create /users
+    //
+    describe(("create /users"), () => {
+        it('should create a new user with id 4', async function () {
+            this.timeout(10000);
+
+            let bodyString = JSON.stringify({
+                name: 'Yoni',
+                height: 500
+            });
+
+            let options = {
+                host: 'localhost',
+                path: '/users',
+                port: 3000,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': bodyString.length
+                }
+            };
+
+            http.request(options, async (res: http.IncomingMessage) => {
+                expect(res.statusCode).to.equal(200);
+
+                let body = await getBody(res);
+                let userId: string = JSON.parse(body).id;
+
+                expect(userId, "Received a wrong user id").to.equal((4).toString());
+            }).write(bodyString);
+        });
+    });
+
+    //
+    // delete /users/2
+    //
+    describe(("delete /users/2"), () => {
+        it('should delete users with id 2', async function () {
+            this.timeout(10000);
+
+            let options = {
+                host: 'localhost',
+                path: '/users/2',
+                port: 3000,
+                method: 'DELETE',
+            };
+
+            let user2: User = <User>(await usersManager.readById((2).toString()));
+
+            http.request(options, async (res: http.IncomingMessage) => {
+                expect(res.statusCode).to.equal(200);
+
+                let body = await getBody(res);
+                let deletedItem: string = JSON.parse(body).count;
+
+                expect(body, "Didn't delete all items").to.equal(JSON.stringify(user2));
+            }).end();
+        });
+    });
+
+    //
+    // delete all /users
+    //
+    describe(("delete /users"), () => {
+        it('should delete all users', async function () {
+            this.timeout(10000);
+
+            let options = {
+                host: 'localhost',
+                path: '/users',
+                port: 3000,
+                method: 'DELETE',
+            };
+
+            http.request(options, async (res: http.IncomingMessage) => {
+                expect(res.statusCode).to.equal(200);
+
+                let body = await getBody(res);
+                let deleted: string = JSON.parse(body).count;
+
+                expect(deleted, "Didn't delete all items").to.equal(4);
+            }).end();
+        });
+    });
 });
 
-function getBody(res: http.IncomingMessage): Promise<string>{
+function getBody(res: http.IncomingMessage): Promise<string> {
     return new Promise((resolve, reject) => {
         let body = '';
-    
-        res.on('data', (data) =>{
+
+        res.on('data', (data) => {
             body += data;
         });
-    
+
         res.on('end', () => {
             resolve(body);
         });
