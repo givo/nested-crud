@@ -216,7 +216,7 @@ export class Cruder {
             filter = queryFilter(req);
 
             try {
-                let deleted = await (<any>req).cruder.lastCollection.delete(limit, filter);
+                let deleted = await (<any>req).cruder.lastCollection.deleteMany(limit, filter);
                 res.json({ count: deleted });
             }
             catch (err) {
@@ -232,8 +232,8 @@ export class Cruder {
             let id: string = req.params[paramId];
 
             try {
-                let deletedItem = await (<any>req).cruder.lastCollection.deleteById(id);
-                res.json(deletedItem);
+                let deletedItem: IDescriptor = await (<any>req).cruder.lastCollection.deleteById(id);
+                res.json(deletedItem.describe());
             }
             catch (err) {
                 res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
