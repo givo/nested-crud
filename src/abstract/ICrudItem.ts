@@ -2,6 +2,14 @@ import { ICrudCollection } from "./ICrudCollection";
 
 export interface ICrudItem{
     read(): Promise<any>;    
-    update(item: any): Promise<number>;
+    update(item: any): Promise<any>;
+
+    /**
+     * TODO: Important - collection name param must be equal to url collection name
+     * 
+     * @param {string} collectionName 
+     * @returns {ICrudCollection} 
+     * @memberof ICrudItem
+     */
     getCollection(collectionName: string): ICrudCollection;
 }
