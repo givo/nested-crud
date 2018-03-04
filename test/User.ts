@@ -6,7 +6,7 @@ import { ItemsManager } from "./ItemsManager";
 
 export class User extends CrudItem{
     private _booksCounter = 0;
-    private _books: ItemsManager<Book>;
+    private books: ItemsManager<Book>;
 
     constructor(public name: string, public height: number){
         super();
@@ -14,14 +14,14 @@ export class User extends CrudItem{
         this.name = name;
         this.height = height;
 
-        this._books = new ItemsManager<Book>();
+        this.books = new ItemsManager<Book>();
     }
 
     public describe(): any{
         let description = {
             name: this.name,
             height: this.height,
-            books: this._books.describe(),
+            books: this.books.describe(),
         }
 
         return description;
