@@ -38,14 +38,14 @@ describe("Curder - Collections", () => {
     // get many /users/1/books
     //
     describe(("get /users/1/books"), () => {
-        it('should return all books of user 1', async function (done) {
+        it('should return all books of user 1', async function () {
             this.timeout(10000);
 
-            let resBody: string = await request(`http://127.0.0.1/users/1/books`, 'GET', '');
+            http.get(`http://127.0.0.1:${port}/users/1/books`, async (res: http.IncomingMessage) => {
+                let resBody: string = await getBody(res);
 
-            expect(resBody, `Didn't received users properly, received: ${resBody}`).to.equal(JSON.stringify(beniBooks.describe()));
-
-            done();
+                expect(resBody, `Didn't received books of user 1 properly, received: ${resBody}`).to.equal(JSON.stringify(beniBooks.describe()));
+            });
         });
     });
 
@@ -53,15 +53,15 @@ describe("Curder - Collections", () => {
     // get /users/1/books/1
     //
     describe(("get /users/1/books/1"), () => {
-        it('should return book with id 1 of user 1', async function (done) {
+        it('should return book with id 1 of user 1', async function () {
             this.timeout(10000);
 
-            let resBody: string = await request(`http://127.0.0.1/users/1/books/1`, 'GET', '');
+            http.get(`http://127.0.0.1:${port}/users/1/books/1`, async (res: http.IncomingMessage) => {
+                let resBody: string = await getBody(res);
 
-            let expectedBook = await beniBooks.readById('1');
-            expect(resBody, `Didn't received book with id 1 properly`).to.equal(JSON.stringify(expectedBook.describe()));
-
-            done();
+                let expectedBook = await beniBooks.readById('1');
+                expect(resBody, `Didn't received book with id 1 properly`).to.equal(JSON.stringify(expectedBook.describe()));
+            });
         });
     });
 
@@ -69,7 +69,7 @@ describe("Curder - Collections", () => {
     // update /users/1/books/1
     //
     describe(("put /users/1/books/1"), () => {
-        it('should update book with id 1', async function (done) {
+        it('should update book with id 1', async function () {
             this.timeout(10000);
 
             let expectedBook = new Book("Poor Father Rich Father");
@@ -78,8 +78,6 @@ describe("Curder - Collections", () => {
             let resBody = await request(`http://127.0.0.1/users/1/books/1`, 'PUT', reqBody);
 
             expect(resBody, `Didn't update book with id 1`).to.equal(JSON.stringify(expectedBook.describe()));
-
-            done();
         });
     });
 });
@@ -101,7 +99,7 @@ async function request(url: string, method: string, data: string): Promise<strin
             expect(res.statusCode).to.equal(200);
 
             resolve(await getBody(res));
-        });
+        }).write(data);
     });
 }
 
