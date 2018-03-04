@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import * as express from 'express';
-import { Cruder } from '../src/index';
-import { User } from './User';
+import { Cruder } from '../index';
+import { User } from './foundations/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { ItemsManager } from './ItemsManager';
+import { ItemsManager } from './foundations/ItemsManager';
 
 let app = express();
 let cruder = new Cruder();
@@ -17,6 +17,8 @@ usersManager.create(new User("Shlomi", 188));
 usersManager.create(new User("Shimon", 180));
 
 let allUsers: any[];
+let server: http.Server;
+
 
 describe("Curder - Collections", () => {
     before(async () => {
@@ -28,7 +30,11 @@ describe("Curder - Collections", () => {
         let usersREST = cruder.listen('/users/:userId', usersManager);
         app.use(usersREST);
 
-        app.listen(3000);
+        server = app.listen(3000);
+    });
+
+    after(() => {
+        server.close();
     });
 
     //
@@ -208,7 +214,7 @@ describe("Curder - Collections", () => {
                 let body = await getBody(res);
                 let deletedItem: string = JSON.parse(body);
 
-                expect(body, "Didn't delete all items").to.equal(JSON.stringify(user2.describe()));
+                expect(body, "Didn't delete item with id 2").to.equal(JSON.stringify(user2.describe()));
             }).end();
         });
     });

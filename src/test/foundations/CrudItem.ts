@@ -1,6 +1,6 @@
-import { IDescriptor } from "../src/abstract/IDescriptor";
-import { ICrudItem } from "../src/abstract/ICrudItem";
-import { ICrudCollection } from "../src/index";
+import { IDescriptor } from "../../abstract/IDescriptor";
+import { ICrudItem } from "../../abstract/ICrudItem";
+import { ICrudCollection } from "../../index";
 
 export class CrudItem implements IDescriptor, ICrudItem{    
     

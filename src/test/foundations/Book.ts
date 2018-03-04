@@ -1,4 +1,4 @@
-import { ICrudCollection } from "../src/abstract/ICrudCollection";
+import { ICrudCollection } from "../../abstract/ICrudCollection";
 import { Page } from "./Page";
 import { CrudItem } from "./CrudItem";
 

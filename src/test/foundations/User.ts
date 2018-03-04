@@ -1,6 +1,6 @@
-import { IDescriptor, IParam } from "../src/index";
+import { IDescriptor, IParam } from "../../index";
 import { CrudItem } from "./CrudItem";
-import { ICrudCollection } from "../src/abstract/ICrudCollection";
+import { ICrudCollection } from "../../abstract/ICrudCollection";
 import { Book } from "./Book";
 import { ItemsManager } from "./ItemsManager";
 
@@ -13,7 +13,7 @@ export class User extends CrudItem{
         
         this.name = name;
         this.height = height;
-
+        
         this.books = new ItemsManager<Book>();
     }
 

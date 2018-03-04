@@ -1,4 +1,7 @@
-.vs/
-node_modules/
+/.vs
+/.vscode
+/node_modules
 /src
+/dist/test
 gulpfile.js
+/test
