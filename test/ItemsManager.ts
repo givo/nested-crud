@@ -1,7 +1,7 @@
 import { ICrudCollection, IParam, IDescriptor } from "../src/index";
 import { CrudItem } from "./CrudItem";
 
-export class ItemsManager<T extends CrudItem> implements ICrudCollection, IDescriptor{
+export class ItemsManager<T extends CrudItem> implements ICrudCollection{
     private _itemsCounter = 0;
     private _items: Map<string, T>;
 

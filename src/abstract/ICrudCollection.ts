@@ -1,7 +1,7 @@
 import { IDescriptor } from "./IDescriptor";
 import { IParam } from "./IParam";
 
-export interface ICrudCollection {
+export interface ICrudCollection extends IDescriptor {
     /**
      * Create a single item
      * 
