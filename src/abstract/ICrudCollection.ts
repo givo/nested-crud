@@ -68,5 +68,5 @@ export interface ICrudCollection extends IDescriptor {
      * @returns {Promise<any>} The deleted item
      * @memberof ICrudCollection
      */
-    deleteMany(limit: number, filter: Array<IParam>): Promise<number>;
+    deleteMany(limit?: number, filter?: Array<IParam>): Promise<number>;
 }
