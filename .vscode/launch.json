@@ -5,12 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "preLaunchTask": "tsc",
+            "type": "node",
+            "request": "launch",
+            "name": "Node",            
+            "program": "${workspaceRoot}/dist/test/TestServer.js",
+        },
+        {
             "type": "node",
             "request": "launch",
             "preLaunchTask": "tsc",
             "name": "Run Mocha",
             "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-            "args": ["./dist/test/**/*.test.js"],
+            "args": ["./dist/test/**/pages.test.js"],
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]
