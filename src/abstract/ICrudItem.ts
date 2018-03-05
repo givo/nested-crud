@@ -1,6 +1,7 @@
 import { ICrudCollection } from "./ICrudCollection";
+import { IDescriptor } from "./IDescriptor";
 
-export interface ICrudItem{
+export interface ICrudItem extends IDescriptor{
     id: string;
 
     read(): Promise<any>;    
