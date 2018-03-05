@@ -10,19 +10,21 @@ import { Book } from './foundations/Book';
 
 let port = 3001;
 
+let server: http.Server;
 let app = express();
 let cruder = new Cruder();
 
-let usersManager = new ItemsManager<User>();
+let usersManager = new ItemsManager<User>(<(new () => User)>User);
 
 usersManager.create(new User("Yosi", 174));
 
+// beni
 let beni = new User("Beni", 165)
 let beniBooks = beni.getCollection("books");
 beniBooks.create(new Book("Harry Potter"));
 beniBooks.create(new Book("Lord of the Rings"));
-usersManager.create(beni);
 
+usersManager.create(beni);
 usersManager.create(new User("Shlomi", 188));
 usersManager.create(new User("Shimon", 180));
 
@@ -31,7 +33,28 @@ describe("Curder - Collections", () => {
         let booksREST = cruder.listen('/users/:userId/books/:bookId', usersManager);
         app.use(booksREST);
 
-        app.listen(port);
+        server = app.listen(port);
+    });
+
+    after(() => {
+        server.close(); 
+    });
+
+    //
+    // create /users/1/books
+    //
+    describe(("create /users/1/books"), () => {
+        it('should create a new book for user 1', async function () {
+            this.timeout(10000);
+
+            let expectedBook: Book = new Book("Poor Father Rich Father");
+
+            let reqBody = JSON.stringify(expectedBook);
+            let resBody = await request(`http://127.0.0.1/users/1/books`, 'POST', reqBody);
+
+            resBody = JSON.parse(resBody).id;
+            expect(resBody, `Didn't update book with id 1`).to.equal("2");
+        });
     });
 
     //
@@ -50,7 +73,7 @@ describe("Curder - Collections", () => {
     });
 
     //
-    // get /users/1/books/1
+    // get by id /users/1/books/1
     //
     describe(("get /users/1/books/1"), () => {
         it('should return book with id 1 of user 1', async function () {
@@ -66,7 +89,7 @@ describe("Curder - Collections", () => {
     });
 
     //
-    // update /users/1/books/1
+    // update by id /users/1/books/1
     //
     describe(("put /users/1/books/1"), () => {
         it('should update book with id 1', async function () {
@@ -80,26 +103,83 @@ describe("Curder - Collections", () => {
             expect(resBody, `Didn't update book with id 1`).to.equal(JSON.stringify(expectedBook.describe()));
         });
     });
+
+    //
+    // update many /users/1/books
+    //
+    describe(("put /users/1/books"), () => {
+        it('should update all books of user 1', async function () {
+            this.timeout(10000);
+
+            let expectedBook = new Book("The Alchemist");
+
+            let reqBody = JSON.stringify(expectedBook);
+            let resBody = await request(`http://127.0.0.1/users/1/books`, 'PUT', reqBody);
+
+            resBody = JSON.parse(resBody).count;
+            expect(resBody, `Didn't update all books of user 1`).to.equal(3);
+        });
+    });
+
+    //
+    // delete /users/1/books/1
+    //
+    describe(("delete /users/1/books/1"), () => {
+        it('should delete book 1 of user 1', async function () {
+            this.timeout(10000);
+
+            let bookToDelete = await beniBooks.readById('1');
+
+            let resBody = await request(`http://127.0.0.1/users/1/books/1`, 'DELETE');            
+
+            expect(resBody, `Didn't receive deleted book with id 1`).to.equal(JSON.stringify(bookToDelete.describe()));
+        });
+    });
+
+    //
+    // delete many /users/1/books
+    //
+    describe(("delete /users/1/books"), () => {
+        it('should delete book 1 of user 1', async function () {
+            this.timeout(10000);
+
+            let bookToDelete = await beniBooks.readById('1');
+
+            let resBody = await request(`http://127.0.0.1/users/1/books`, 'DELETE');            
+            let deleted = JSON.parse(resBody).count;
+
+            expect(deleted, `Didn't delete all 3 books`).to.equal(deleted);
+        });
+    });
 });
 
-async function request(url: string, method: string, data: string): Promise<string> {
+async function request(url: string, method: string, data?: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         let options = {
             host: 'localhost',
             path: url,
             port: port,
-            method: method,
-            headers: {
+            method: method,            
+        };
+
+        if(data){
+            (<any>options)['headers'] = {
                 'Content-Type': 'application/json',
                 'Content-Length': data.length
             }
-        };
+        }
 
-        http.request(options, async (res) => {
+        let req = http.request(options, async (res) => {
             expect(res.statusCode).to.equal(200);
 
             resolve(await getBody(res));
-        }).write(data);
+        });
+
+        if(data){
+            req.write(data);
+        }
+
+        req.end();
     });
 }
 
