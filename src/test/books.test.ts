@@ -144,12 +144,10 @@ describe("Curder - Collections", () => {
         it('should delete book 1 of user 1', async function () {
             this.timeout(10000);
 
-            let bookToDelete = await beniBooks.readById('1');
-
             let resBody = await request(`http://127.0.0.1/users/1/books`, port, 'DELETE');            
             let deleted = JSON.parse(resBody).count;
 
-            expect(deleted, `Didn't delete all 3 books`).to.equal(deleted);
+            expect(deleted, `Didn't delete all 2 books`).to.equal(2);
         });
     });
 });
