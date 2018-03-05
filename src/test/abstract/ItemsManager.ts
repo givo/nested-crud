@@ -88,7 +88,7 @@ export class ItemsManager<T extends CrudItem> implements ICrudCollection{
         let items = Array<T>();
 
         this._items.forEach((item, id) => {
-            items.push(item);
+            items.push(item.describe());
         });
 
         return items;
