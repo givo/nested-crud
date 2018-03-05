@@ -6,6 +6,7 @@ import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
 import { ItemsManager } from './abstract/ItemsManager';
+import { getBody } from './helper';
 
 let app = express();
 let cruder = new Cruder();
