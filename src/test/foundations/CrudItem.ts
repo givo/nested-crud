@@ -3,7 +3,16 @@ import { ICrudItem } from "../../abstract/ICrudItem";
 import { ICrudCollection } from "../../index";
 
 export class CrudItem implements IDescriptor, ICrudItem{    
-    
+    private _id: string;
+
+    get id(): string{
+        return this._id;
+    }
+
+    set id(id: string){
+        this._id = id;
+    }
+
     public async update(fields: any): Promise<any>{
         for(let param in fields){
             if((<any>this)[param]){

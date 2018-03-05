@@ -1,6 +1,8 @@
 import { ICrudCollection } from "./ICrudCollection";
 
 export interface ICrudItem{
+    id: string;
+
     read(): Promise<any>;    
     update(item: any): Promise<any>;
 

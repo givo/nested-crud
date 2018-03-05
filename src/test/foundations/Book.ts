@@ -11,4 +11,14 @@ export class Book extends CrudItem{
         this.name = name;
         this.pages = new Array<Page>();
     }
+
+    public describe(): any{
+        let description = {
+            id: this.id,
+            name: this.name,            
+            pages: this.pages,
+        }
+
+        return description;
+    }
 }

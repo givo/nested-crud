@@ -8,7 +8,7 @@ export class User extends CrudItem{
     private _booksCounter = 0;
     private books: ItemsManager<Book>;
 
-    constructor(public name: string, public height: number){
+    constructor(public name: string = " ", public height: number = 1){
         super();
         
         this.name = name;
@@ -19,6 +19,7 @@ export class User extends CrudItem{
 
     public describe(): any{
         let description = {
+            id: this.id,
             name: this.name,
             height: this.height,
             books: this.books.describe(),
