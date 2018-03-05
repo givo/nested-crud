@@ -1,16 +1,33 @@
 import { ICrudCollection, IParam, IDescriptor } from "../../index";
 import { CrudItem } from "./CrudItem";
 
+export interface NoParamConstructor<T>{
+    new (): T;
+}
+
 export class ItemsManager<T extends CrudItem> implements ICrudCollection{
     private _itemsCounter = 0;
     private _items: Map<string, T>;
+    private ctor: (new () => T);
 
-    constructor(){
+    /**
+     * Creates an instance of ItemsManager.
+     * 
+     * @param {(new () => T)} ctor Constructor of T, in order to create a new T on create()
+     * @memberof ItemsManager
+     */
+    constructor(ctor: (new () => T)){
         this._items = new Map<string, T>();
+        this.ctor = ctor;
     }
 
-    async create(item: any): Promise<string> {
-        this._items.set((this._itemsCounter++).toString(), item);
+
+    async create(item: T): Promise<string> {
+        // beacuse item can be of type any, we need to create a new T() using this.ctor
+        let newItem: T = new this.ctor();
+        newItem.update(item);
+
+        this._items.set((this._itemsCounter++).toString(), newItem);
 
         return (this._itemsCounter - 1).toString();
     }

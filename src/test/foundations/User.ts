@@ -14,7 +14,7 @@ export class User extends CrudItem{
         this.name = name;
         this.height = height;
         
-        this.books = new ItemsManager<Book>();
+        this.books = new ItemsManager<Book>(<(new () => Book)>Book);
     }
 
     public describe(): any{

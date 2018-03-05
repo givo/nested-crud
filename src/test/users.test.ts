@@ -9,7 +9,7 @@ import { ItemsManager } from './foundations/ItemsManager';
 
 let app = express();
 let cruder = new Cruder();
-let usersManager = new ItemsManager<User>();
+let usersManager = new ItemsManager<User>(<(new () => User)>User);
 
 usersManager.create(new User("Yosi", 174));
 usersManager.create(new User("Beni", 165));

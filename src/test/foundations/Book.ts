@@ -6,7 +6,7 @@ export class Book extends CrudItem{
     public name: string;
     public pages: Page[];
 
-    constructor(name: string){
+    constructor(name: string = " "){
         super();
         this.name = name;
         this.pages = new Array<Page>();
