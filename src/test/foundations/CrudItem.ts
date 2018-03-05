@@ -6,7 +6,7 @@ export class CrudItem implements IDescriptor, ICrudItem{
     
     public async update(fields: any): Promise<any>{
         for(let param in fields){
-            if((<any>this)[param] && (<any>fields)[param] !== Object((<any>fields)[param])){
+            if((<any>this)[param]){
                 (<any>this)[param] = fields[param];
             }
         }
