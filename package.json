@@ -1,6 +1,6 @@
 {
   "name": "cruder",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Create a REST crud interface for your resources",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
