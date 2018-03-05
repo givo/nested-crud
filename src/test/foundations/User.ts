@@ -1,8 +1,8 @@
 import { IDescriptor, IParam } from "../../index";
-import { CrudItem } from "./CrudItem";
+import { CrudItem } from "../abstract/CrudItem";
 import { ICrudCollection } from "../../abstract/ICrudCollection";
 import { Book } from "./Book";
-import { ItemsManager } from "./ItemsManager";
+import { ItemsManager } from "../abstract/ItemsManager";
 
 export class User extends CrudItem{
     private _booksCounter = 0;

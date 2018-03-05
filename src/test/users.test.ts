@@ -5,7 +5,7 @@ import { User } from './foundations/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { ItemsManager } from './foundations/ItemsManager';
+import { ItemsManager } from './abstract/ItemsManager';
 
 let app = express();
 let cruder = new Cruder();
@@ -244,17 +244,3 @@ describe("Curder - Collections", () => {
         });
     });
 });
-
-function getBody(res: http.IncomingMessage): Promise<string> {
-    return new Promise((resolve, reject) => {
-        let body = '';
-
-        res.on('data', (data) => {
-            body += data;
-        });
-
-        res.on('end', () => {
-            resolve(body);
-        });
-    });
-}

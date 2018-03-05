@@ -5,8 +5,9 @@ import { User } from './foundations/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { ItemsManager } from './foundations/ItemsManager';
+import { ItemsManager } from './abstract/ItemsManager';
 import { Book } from './foundations/Book';
+import { request, getBody } from './helper';
 
 let port = 3001;
 
@@ -50,7 +51,7 @@ describe("Curder - Collections", () => {
             let expectedBook: Book = new Book("Poor Father Rich Father");
 
             let reqBody = JSON.stringify(expectedBook);
-            let resBody = await request(`http://127.0.0.1/users/1/books`, 'POST', reqBody);
+            let resBody = await request(`http://127.0.0.1/users/1/books`, port, 'POST', reqBody);
 
             resBody = JSON.parse(resBody).id;
             expect(resBody, `Didn't update book with id 1`).to.equal("2");
@@ -98,7 +99,7 @@ describe("Curder - Collections", () => {
             let expectedBook = new Book("Poor Father Rich Father");
 
             let reqBody = JSON.stringify(expectedBook);
-            let resBody = await request(`http://127.0.0.1/users/1/books/1`, 'PUT', reqBody);
+            let resBody = await request(`http://127.0.0.1/users/1/books/1`, port, 'PUT', reqBody);
 
             expect(resBody, `Didn't update book with id 1`).to.equal(JSON.stringify(expectedBook.describe()));
         });
@@ -114,7 +115,7 @@ describe("Curder - Collections", () => {
             let expectedBook = new Book("The Alchemist");
 
             let reqBody = JSON.stringify(expectedBook);
-            let resBody = await request(`http://127.0.0.1/users/1/books`, 'PUT', reqBody);
+            let resBody = await request(`http://127.0.0.1/users/1/books`, port, 'PUT', reqBody);
 
             resBody = JSON.parse(resBody).count;
             expect(resBody, `Didn't update all books of user 1`).to.equal(3);
@@ -130,7 +131,7 @@ describe("Curder - Collections", () => {
 
             let bookToDelete = await beniBooks.readById('1');
 
-            let resBody = await request(`http://127.0.0.1/users/1/books/1`, 'DELETE');            
+            let resBody = await request(`http://127.0.0.1/users/1/books/1`, port, 'DELETE');            
 
             expect(resBody, `Didn't receive deleted book with id 1`).to.equal(JSON.stringify(bookToDelete.describe()));
         });
@@ -145,54 +146,10 @@ describe("Curder - Collections", () => {
 
             let bookToDelete = await beniBooks.readById('1');
 
-            let resBody = await request(`http://127.0.0.1/users/1/books`, 'DELETE');            
+            let resBody = await request(`http://127.0.0.1/users/1/books`, port, 'DELETE');            
             let deleted = JSON.parse(resBody).count;
 
             expect(deleted, `Didn't delete all 3 books`).to.equal(deleted);
         });
     });
 });
-
-async function request(url: string, method: string, data?: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        let options = {
-            host: 'localhost',
-            path: url,
-            port: port,
-            method: method,            
-        };
-
-        if(data){
-            (<any>options)['headers'] = {
-                'Content-Type': 'application/json',
-                'Content-Length': data.length
-            }
-        }
-
-        let req = http.request(options, async (res) => {
-            expect(res.statusCode).to.equal(200);
-
-            resolve(await getBody(res));
-        });
-
-        if(data){
-            req.write(data);
-        }
-
-        req.end();
-    });
-}
-
-function getBody(res: http.IncomingMessage): Promise<string> {
-    return new Promise((resolve, reject) => {
-        let body = '';
-
-        res.on('data', (data) => {
-            body += data;
-        });
-
-        res.on('end', () => {
-            resolve(body);
-        });
-    });
-}

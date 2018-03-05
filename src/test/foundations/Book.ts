@@ -1,6 +1,6 @@
 import { ICrudCollection } from "../../abstract/ICrudCollection";
 import { Page } from "./Page";
-import { CrudItem } from "./CrudItem";
+import { CrudItem } from "../abstract/CrudItem";
 
 export class Book extends CrudItem{
     public name: string;

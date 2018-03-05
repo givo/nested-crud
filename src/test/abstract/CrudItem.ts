@@ -2,7 +2,7 @@ import { IDescriptor } from "../../abstract/IDescriptor";
 import { ICrudItem } from "../../abstract/ICrudItem";
 import { ICrudCollection } from "../../index";
 
-export class CrudItem implements IDescriptor, ICrudItem{    
+export abstract class CrudItem implements IDescriptor, ICrudItem{    
     private _id: string;
 
     get id(): string{
