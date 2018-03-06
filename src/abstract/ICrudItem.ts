@@ -4,7 +4,7 @@ import { IDescriptor } from "./IDescriptor";
 export interface ICrudItem extends IDescriptor{
     id: string;
 
-    read(): Promise<any>;    
+    read(): Promise<any>;
     update(item: any): Promise<any>;
 
     /**

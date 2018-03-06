@@ -5,7 +5,7 @@ import { User } from './foundations/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { ItemsManager } from './abstract/ItemsManager';
+import { ItemsManager } from '../helpers/ItemsManager';
 import { Book } from './foundations/Book';
 import { Page } from './foundations/Page';
 import { request, getBody } from './helper';
@@ -43,7 +43,7 @@ usersManager.create(new User("Shlomi", 180));
 usersManager.create(new User("Maor", 180));
 
 
-describe("Curder - Collections", () => {
+describe("Pages", () => {
     before(async () => {
         let paegsREST = cruder.listen('/users/:userId/books/:bookId/pages/:pageId', usersManager);
         app.use(paegsREST);

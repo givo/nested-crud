@@ -5,7 +5,7 @@ import { User } from './foundations/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { ItemsManager } from './abstract/ItemsManager';
+import { ItemsManager } from '../helpers/ItemsManager';
 import { getBody } from './helper';
 
 let app = express();
@@ -21,7 +21,7 @@ let allUsers: any[];
 let server: http.Server;
 
 
-describe("Curder - Collections", () => {
+describe("Users", () => {
     before(async () => {
         allUsers = await usersManager.readMany();
         allUsers = allUsers.map((user) => {
@@ -45,18 +45,12 @@ describe("Curder - Collections", () => {
         it('should return all users', function (done) {
             this.timeout(10000);
 
-            http.get('http://127.0.0.1:3000/users', (res) => {
+            http.get('http://127.0.0.1:3000/users', async (res) => {
                 expect(res.statusCode).to.equal(200);
 
-                let body = '';
-                res.on('data', (data) => {
-                    body += data;
-                });
+                let body = await getBody(res);
 
-                res.on('end', () => {
-                    expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(allUsers));
-                    done();
-                });
+                expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(allUsers));
             });
         });
     });

@@ -4,7 +4,7 @@ import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
 import { Cruder } from '../Cruder';
-import { ItemsManager } from './abstract/ItemsManager';
+import { ItemsManager } from '../helpers/ItemsManager';
 import { User } from './foundations/User';
 import { Book } from './foundations/Book';
 import { Page } from './foundations/Page';

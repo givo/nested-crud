@@ -1,12 +1,12 @@
-import { CrudItem } from "../abstract/CrudItem";
+import { BasicItem } from "../../helpers/BasicItem";
 
-export class Page extends CrudItem{
+export class Page extends BasicItem{
     public number: number;
     public content: string;
 
     /**
      * Creates an instance of Page.
-     * @param {number} [number=-1] Default value is important for CrudItem.update()!
+     * @param {number} [number=-1] Default value is important for BasicItem.update()!
      * @param {string} [content=" "] 
      * @memberof Page
      */
