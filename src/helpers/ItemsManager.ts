@@ -20,6 +20,13 @@ export class ItemsManager<T extends ICrudItem> implements ICrudCollection{
         this.TCtor = tCtor;
     }
 
+    /**
+     * copies the item and pushes the copy to the collection
+     * 
+     * @param {T} item 
+     * @returns {Promise<string>} 
+     * @memberof ItemsManager
+     */
     async create(item: T): Promise<string> {
         // beacuse item can be of type any, we need to create a new T() using this.ctor
         let newItem: T = new this.TCtor();
