@@ -1,10 +1,10 @@
 import { IDescriptor, IParam } from "../../index";
-import { CrudItem } from "../abstract/CrudItem";
+import { BasicItem } from "../../helpers/BasicItem";
 import { ICrudCollection } from "../../abstract/ICrudCollection";
 import { Book } from "./Book";
-import { ItemsManager } from "../abstract/ItemsManager";
+import { ItemsManager } from "../../helpers/ItemsManager";
 
-export class User extends CrudItem{
+export class User extends BasicItem{
     private _booksCounter = 0;
     private books: ItemsManager<Book>;
 
@@ -26,5 +26,13 @@ export class User extends CrudItem{
         }
 
         return description;
+    }
+
+    public async update(fields: any){
+        super.update(fields);
+
+        if(fields["books"] && fields["books"] instanceof ItemsManager){
+            this.books = fields["books"];
+        }
     }
 }

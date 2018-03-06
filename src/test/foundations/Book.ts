@@ -1,9 +1,9 @@
 import { ICrudCollection } from "../../abstract/ICrudCollection";
 import { Page } from "./Page";
-import { CrudItem } from "../abstract/CrudItem";
-import { ItemsManager } from "../abstract/ItemsManager";
+import { BasicItem } from "../../helpers/BasicItem";
+import { ItemsManager } from "../../helpers/ItemsManager";
 
-export class Book extends CrudItem{
+export class Book extends BasicItem{
     public name: string;
     public pages: ItemsManager<Page>;
 
@@ -21,5 +21,13 @@ export class Book extends CrudItem{
         }
 
         return description;
+    }
+
+    public async update(fields: any){
+        super.update(fields);
+
+        if(fields["pages"] && fields["pages"] instanceof ItemsManager){
+            this.pages = fields["pages"];
+        }
     }
 }
