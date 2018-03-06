@@ -105,7 +105,15 @@ export class Cruder {
         // get all sub collections and items before every request to the desired collection
         //        
         router.use(collectionUrl, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            await self.travelUrl(collectionUrl, req, <ICrudCollection>parentCollection);
+            try{
+                await self.travelUrl(collectionUrl, req, <ICrudCollection>parentCollection);
+            }
+            catch(err){
+                res.statusCode = HttpStatus.NOT_FOUND;
+                res.json(err);
+
+                return;
+            }
 
             next();
         });
@@ -114,7 +122,15 @@ export class Cruder {
         // get all sub collections and items before every request the desired item
         //
         router.use(url, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            await self.travelUrl(url, req, <ICrudCollection>parentCollection);
+            try{
+                await self.travelUrl(url, req, <ICrudCollection>parentCollection);
+            }
+            catch(err){
+                res.statusCode = HttpStatus.NOT_FOUND;
+                res.json(err);
+
+                return;
+            }
 
             next();
         });
