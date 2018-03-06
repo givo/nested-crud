@@ -6,7 +6,7 @@ export interface NoParamConstructor<T>{
 
 export class ItemsManager<T extends ICrudItem> implements ICrudCollection{        
     private _itemsCounter = 0;
-    private _items: Map<string, T>;
+    public _items: Map<string, T>;
     private TCtor: (new () => T);
 
     /**
@@ -81,7 +81,7 @@ export class ItemsManager<T extends ICrudItem> implements ICrudCollection{
         return item;
     }
 
-    async deleteMany(limit: number, filter: IParam[]): Promise<number> {
+    async deleteMany(limit?: number, filter?: IParam[]): Promise<number> {
         let size = this._items.size;
 
         this._items.clear();
