@@ -5,7 +5,7 @@ import { User } from './foundations/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { ItemsManager } from './abstract/ItemsManager';
+import { ItemsManager } from '../helpers/ItemsManager';
 import { Book } from './foundations/Book';
 import { request, getBody } from './helper';
 
@@ -29,7 +29,7 @@ usersManager.create(beni);
 usersManager.create(new User("Shlomi", 188));
 usersManager.create(new User("Shimon", 180));
 
-describe("Curder - Collections", () => {
+describe("Books", () => {
     before(async () => {
         let booksREST = cruder.listen('/users/:userId/books/:bookId', usersManager);
         app.use(booksREST);
@@ -50,7 +50,7 @@ describe("Curder - Collections", () => {
 
             let expectedBook: Book = new Book("Poor Father Rich Father");
 
-            let reqBody = JSON.stringify(expectedBook);
+            let reqBody = JSON.stringify(expectedBook.describe());
             let resBody = await request(`http://127.0.0.1/users/1/books`, port, 'POST', reqBody);
 
             resBody = JSON.parse(resBody).id;
@@ -97,8 +97,9 @@ describe("Curder - Collections", () => {
             this.timeout(10000);
 
             let expectedBook = new Book("Poor Father Rich Father");
+            expectedBook.id = "1";
 
-            let reqBody = JSON.stringify(expectedBook);
+            let reqBody = JSON.stringify(expectedBook.describe());
             let resBody = await request(`http://127.0.0.1/users/1/books/1`, port, 'PUT', reqBody);
 
             expect(resBody, `Didn't update book with id 1`).to.equal(JSON.stringify(expectedBook.describe()));
