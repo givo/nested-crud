@@ -3,4 +3,6 @@ export { IDescriptor } from './abstract/IDescriptor';
 export { FilterOperators } from './abstract/FilterOperators';
 export { ICrudItem } from './abstract/ICrudItem';
 export { IParam } from './abstract/IParam';
+export { BasicItem } from './helpers/BasicItem';
+export { ItemsManager } from './helpers/ItemsManager';
 export { Cruder } from './Cruder';

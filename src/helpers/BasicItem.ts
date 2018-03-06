@@ -1,8 +1,9 @@
-import { IDescriptor } from "../../abstract/IDescriptor";
-import { ICrudItem } from "../../abstract/ICrudItem";
-import { ICrudCollection } from "../../index";
+import { IDescriptor } from "../abstract/IDescriptor";
+import { ICrudItem } from "../abstract/ICrudItem";
+import { ICrudCollection } from "../index";
+import { ItemsManager } from "./ItemsManager";
 
-export abstract class CrudItem implements IDescriptor, ICrudItem{    
+export class BasicItem implements ICrudItem{    
     private _id: string;
 
     get id(): string{
@@ -15,7 +16,8 @@ export abstract class CrudItem implements IDescriptor, ICrudItem{
 
     public async update(fields: any): Promise<any>{
         for(let param in fields){
-            if((<any>this)[param]){
+            let currentProp = (<any>this)[param];
+            if(currentProp && !(currentProp instanceof Object)){
                 (<any>this)[param] = fields[param];
             }
         }
