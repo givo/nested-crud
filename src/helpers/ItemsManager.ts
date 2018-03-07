@@ -5,7 +5,7 @@ export interface NoParamConstructor<T>{
 }
 
 export class ItemsManager<T extends ICrudItem> implements ICrudCollection{        
-    private _itemsCounter = 0;
+    protected _itemsCounter = 0;
     public _items: Map<string, T>;
     private TCtor: (new () => T);
 
@@ -15,9 +15,11 @@ export class ItemsManager<T extends ICrudItem> implements ICrudCollection{
      * @param {(new () => T)} ctor Constructor of T, in order to create a new T on create()
      * @memberof ItemsManager
      */
-    constructor(tCtor: (new () => T)){                
+    constructor(tCtor?: (new () => T)){                
         this._items = new Map<string, T>();
-        this.TCtor = tCtor;
+        if(tCtor){
+            this.TCtor = tCtor;
+        }
     }
 
     /**
