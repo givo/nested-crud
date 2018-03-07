@@ -91,8 +91,8 @@ export class ItemsManager<T extends ICrudItem> implements ICrudCollection{
         return size;
     }
 
-    public describe() {
-        let items = Array<T>();
+    public describe(): Array<any> {
+        let items = Array<any>();
 
         this._items.forEach((item, id) => {
             items.push(item.describe());
