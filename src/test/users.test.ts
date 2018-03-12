@@ -7,10 +7,11 @@ import * as assert from 'assert';
 import { promisify } from 'util';
 import { ItemsManager } from '../helpers/ItemsManager';
 import { getBody } from './helper';
+import { UsersCollection } from './foundations/UsersCollection';
 
 let app = express();
 let cruder = new Cruder();
-let usersManager = new ItemsManager<User>(<(new () => User)>User);
+let usersManager = new UsersCollection();
 
 usersManager.create(new User("Yosi", 174));
 usersManager.create(new User("Beni", 165));
@@ -51,6 +52,7 @@ describe("Users", () => {
                 let body = await getBody(res);
 
                 expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(allUsers));
+                done();
             });
         });
     });
@@ -87,6 +89,7 @@ describe("Users", () => {
             this.timeout(10000);
 
             let user1Copy = new User("XXX", 111);
+            user1Copy.id = "1";
             let bodyString = JSON.stringify(user1Copy);
 
             let options = {
