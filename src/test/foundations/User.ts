@@ -2,11 +2,11 @@ import { IDescriptor, IParam } from "../../index";
 import { BasicItem } from "../../helpers/BasicItem";
 import { ICrudCollection } from "../../abstract/ICrudCollection";
 import { Book } from "./Book";
-import { ItemsManager } from "../../helpers/ItemsManager";
+import { BooksCollection } from "./BooksCollection";
 
 export class User extends BasicItem{
     private _booksCounter = 0;
-    private books: ItemsManager<Book>;
+    private books: BooksCollection;
 
     constructor(public name: string = " ", public height: number = 1){
         super();
@@ -14,7 +14,7 @@ export class User extends BasicItem{
         this.name = name;
         this.height = height;
         
-        this.books = new ItemsManager<Book>(<(new () => Book)>Book);
+        this.books = new BooksCollection();
     }
 
     public describe(): any{
@@ -31,7 +31,7 @@ export class User extends BasicItem{
     public async update(fields: any){
         super.update(fields);
 
-        if(fields["books"] && fields["books"] instanceof ItemsManager){
+        if(fields["books"] && fields["books"] instanceof BooksCollection){
             this.books = fields["books"];
         }
     }

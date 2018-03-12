@@ -4,16 +4,18 @@ import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
 import { Cruder } from '../Cruder';
-import { ItemsManager } from '../helpers/ItemsManager';
 import { User } from './foundations/User';
 import { Book } from './foundations/Book';
 import { Page } from './foundations/Page';
+import { UsersCollection } from './foundations/UsersCollection';
+import { PagesCollection } from './foundations/PagesCollection';
 
 (async () => {
     let app = express();
     let cruder = new Cruder();
     
-    let usersManager = new ItemsManager<User>(<(new () => User)>User);
+    // "server is the user manager"
+    let usersManager = new UsersCollection();
 
     // create Beni
     let beni = new User("Beni", 165);
@@ -27,7 +29,7 @@ import { Page } from './foundations/Page';
     let book = <Book>await beniBooks.readById("2");
     
     // create book's pages
-    let pages = book.getCollection("pages");
+    let pages = <PagesCollection>book.getCollection("pages");
     pages.create(new Page(0, "Avishai is the king"));
     pages.create(new Page(1, "Avishai is the prince"));
     pages.create(new Page(2, "Avishai is the queen"));

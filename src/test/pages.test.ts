@@ -5,17 +5,18 @@ import { User } from './foundations/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { ItemsManager } from '../helpers/ItemsManager';
 import { Book } from './foundations/Book';
 import { Page } from './foundations/Page';
 import { request, getBody } from './helper';
+import { UsersCollection } from './foundations/UsersCollection';
+import { PagesCollection } from './foundations/PagesCollection';
 
 let port = 3002;
 let server: http.Server;
 let app = express();
 let cruder = new Cruder();
 
-let usersManager = new ItemsManager<User>(<(new () => User)>User);
+let usersManager = new UsersCollection();
 
 // create beni
 let beni = new User("Beni", 165);
@@ -29,7 +30,7 @@ beniBooks.create(book);
 
 
 // create book's pages
-let pages = book.getCollection("pages");
+let pages = <PagesCollection>book.getCollection("pages");
 pages.create(new Page(0));
 pages.create(new Page(1));
 pages.create(new Page(2));

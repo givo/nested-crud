@@ -1,6 +1,8 @@
 import { BasicItem } from "../../helpers/BasicItem";
+import { ICrudItem, ICrudCollection } from "../../index";
 
-export class Page extends BasicItem{
+export class Page implements ICrudItem{
+    id: string;
     public number: number;
     public content: string;
 
@@ -10,10 +12,25 @@ export class Page extends BasicItem{
      * @param {string} [content=" "] 
      * @memberof Page
      */
-    constructor(number: number = -1, content: string = " "){
-        super();
+    constructor(number: number = -1, content: string = " "){        
         this.number = number;
         this.content = content;
+    }
+
+    public async read(): Promise<any> {
+        return this;
+    }
+
+    public async update(item: any): Promise<any> {
+        for(let param in item){
+            if((<any>this)[param]){
+                (<any>this)[param] = item[param];
+            }
+        }
+    }
+
+    public getCollection(collectionName: string): ICrudCollection | undefined {
+        return undefined;
     }
 
     public describe(): any{
