@@ -1,5 +1,4 @@
 import * as express from 'express';
-import { Router } from 'express';
 import * as HttpStatus from 'http-status-codes';
 import { ICrudCollection } from './abstract/ICrudCollection';
 import { IDescriptor } from './abstract/IDescriptor';
@@ -18,8 +17,40 @@ export class Cruder {
         this._parentCollections = new Map<string, ICrudCollection>();
     }
 
-    public singleTone(url: string, singleTone: ICrudItem) {
+    public singleTone(url: string, singleTone: ICrudItem): express.Router {
+        let router: express.Router = express.Router();
 
+        router.use(bodyParser.json());
+
+        //
+        // get
+        //
+        router.get(url, (req: express.Request, res: express.Response) =>{
+            try {                
+                res.json(singleTone.describe());
+            }
+            catch (err) {
+                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+                res.json(err);
+            }
+        });
+
+        //
+        // put
+        //
+        router.put(url, async (req: express.Request, res: express.Response) => {
+            try{
+                let item: any = req.body;
+                let updated = await singleTone.update(item);
+                res.json(updated.describe());
+            }
+            catch(err){
+                res.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+                res.json(err);
+            }
+        });
+
+        return router;
     }
 
     private async travelUrl(url: string, req: express.Request, parentCollection: ICrudCollection) {        
