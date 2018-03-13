@@ -28,11 +28,13 @@ export class User extends BasicItem{
         return description;
     }
 
-    public async update(fields: any){
+    public async update(fields: any): Promise<IDescriptor>{
         super.update(fields);
 
         if(fields["books"] && fields["books"] instanceof BooksCollection){
             this.books = fields["books"];
         }
+
+        return this;
     }
 }

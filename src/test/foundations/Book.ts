@@ -31,6 +31,8 @@ export class Book implements ICrudItem{
         if(fields["pages"] && fields["pages"] instanceof PagesCollection){
             this.pages = fields["pages"];
         }
+
+        return this;
     }
 
     public async read(): Promise<any> {

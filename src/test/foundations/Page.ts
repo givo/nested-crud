@@ -1,5 +1,6 @@
 import { BasicItem } from "../../helpers/BasicItem";
 import { ICrudItem, ICrudCollection } from "../../index";
+import { IDescriptor } from "../../abstract/IDescriptor";
 
 export class Page implements ICrudItem{
     id: string;
@@ -21,12 +22,14 @@ export class Page implements ICrudItem{
         return this;
     }
 
-    public async update(item: any): Promise<any> {
+    public async update(item: any): Promise<IDescriptor> {
         for(let param in item){
             if((<any>this)[param]){
                 (<any>this)[param] = item[param];
             }
         }
+
+        return this;
     }
 
     public getCollection(collectionName: string): ICrudCollection | undefined {
