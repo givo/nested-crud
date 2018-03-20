@@ -29,7 +29,7 @@ describe("Users", () => {
             return user.describe();
         });
 
-        let usersREST = cruder.listen('/users/:userId', usersManager);
+        let usersREST = cruder.collection('/users/:userId', usersManager);
         app.use(usersREST);
 
         server = app.listen(3000);

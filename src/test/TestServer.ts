@@ -43,9 +43,9 @@ import { PagesCollection } from './foundations/PagesCollection';
     usersManager.create(new User("Shlomi", 188));
     usersManager.create(new User("Shimon", 180));
     
-    let usersREST = cruder.listen('/users/:userId', usersManager);
-    let booksREST = cruder.listen('/users/:userId/books/:bookId', usersManager);
-    let pagesREST = cruder.listen('/users/:userId/books/:bookId/pages/:pageId', usersManager);
+    let usersREST = cruder.collection('/users/:userId', usersManager);
+    let booksREST = cruder.collection('/users/:userId/books/:bookId', usersManager);
+    let pagesREST = cruder.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
     app.use(usersREST);
     app.use(booksREST);
     app.use(pagesREST);

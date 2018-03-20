@@ -31,7 +31,7 @@ usersManager.create(new User("Shimon", 180));
 
 describe("Books", () => {
     before(async () => {
-        let booksREST = cruder.listen('/users/:userId/books/:bookId', usersManager);
+        let booksREST = cruder.collection('/users/:userId/books/:bookId', usersManager);
         app.use(booksREST);
 
         server = app.listen(port);
