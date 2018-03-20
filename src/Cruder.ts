@@ -102,7 +102,7 @@ export class Cruder {
         (<any>req).cruder.lastItem = currentItem;
     }
 
-    public listen(url: string, parentCollection?: ICrudCollection): express.Router {
+    public collection(url: string, parentCollection?: ICrudCollection): express.Router {
         let router: express.Router = express.Router();
         let urlSplit = url.split('/');
         let paramId: string;
