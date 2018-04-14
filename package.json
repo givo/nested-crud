@@ -1,7 +1,7 @@
 {
-  "name": "cruder",
+  "name": "nested-crud",
   "version": "0.3.1",
-  "description": "Create a REST crud interface for your resources",
+  "description": "Create a REST crud interface service with nested collections support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://gitlab.pituah.iaf/matan/cruder.git"
+    "url": ""
   },
   "files": [
     "dist/**/*.js",
@@ -23,7 +23,10 @@
     "http",
     "express"
   ],
-  "author": "Matan Givoni",
+  "author": {
+    "name": "Matan Givoni",
+    "email": "matangivoni@gmail.com"
+  },
   "license": "ISC",
   "dependencies": {
     "http-status-codes": "^1.3.0",
