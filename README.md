@@ -1,4 +1,4 @@
-# cruder
+# nested-crud
 
 ## Introduction
 
@@ -12,6 +12,7 @@ The library focus is on helping the programmer write a service with minimium cod
 * Single tone interface
 * Nested collections
 * Single tone and collection helpers
+* `express` based
 
 ## How to use
 
