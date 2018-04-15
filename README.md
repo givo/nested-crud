@@ -18,7 +18,7 @@ The library focus is on helping the programmer write a service with minimium cod
 
 ## How does it works
 
-The special thing about this library is the fact that you can nest collections within collection. The library knows how to propagate within your collections untill it reaches the wanted resource, for example:
+The special thing about this library is the fact that you can nest collections within collection. The library knows how to propagate within your collections untill it reaches the desired resource, for example:
 
 ```
 GET /users/15/books/4/pages/1
