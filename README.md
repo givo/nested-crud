@@ -24,7 +24,7 @@ The special thing about this library is the fact that you can nest collections w
 GET /users/15/books/4/pages/1
 ```
 
-First will get user with id `15` from `users` collection, then book with id `4` from the user's books collection and finally will get page with id `1` from the book's pages collection.
+First the library will get the user with id `15` from a registered `users` collection, then the book with id `4` from the user's books collection and finally will get the page with id `1` from the book's pages collection.
 
 The same behavior will take place for the other HTTP requests..
 
