@@ -16,11 +16,71 @@ The library focus is on helping the programmer write a service with minimium cod
 
 ## How to use
 
-coming..
+The special thing about this library is the fact that you can nest collections within collection. The library knows how to propagate within your collections untill it reaches the wanted resource, for example:
+
+```
+GET /users/15/books/4/pages/1
+```
+
+First will get user with id `15` from `users` collection, then book with id `4` from the user's books collection and finally will get page with id `1` from the book's pages collection.
+
+The same behavior will take place for the other HTTP requests.
 
 ## Examples
 
-coming..
+Create a class which contains a collection and is contained within another collection:
+
+``` typescript
+export class User implements ICrudItem{
+    protected _booksCounter = 0;
+    
+    protected _id: string;
+    protected books: BooksCollection;    
+    
+    // assignment to `id` is only allowed when using the constructor
+    public get id(): string{
+        return this._id;
+    }
+    
+    // will be called from usersCollection.create()
+    constructor(id: string, public name: string, public height: number, private privateMember: string){       
+        this._id = id;
+        this.name = name;
+        this.height = height;        
+        this.privateMember = privateMember;
+        this.books = new BooksCollection();
+    }
+    
+    // return a description of user and not a full representation
+    public describe(): any{
+        let description = {
+            id: this.id,
+            name: this.name,
+            height: this.height,
+            books: this.books.describe(),   // get a description of books collection 
+        }
+
+        return description;
+    }
+    
+    public async update(fields: any): Promise<IDescriptor>{
+        // override each property except books collection
+        for(let prop in fields){
+            let currentProp = (<any>this)[prop];
+            if(currentProp && prop != "books"){
+                (<any>this)[prop] = fields[param];
+            }
+        }
+        
+        return this;
+    }
+    
+    // no need to implement ICrudItem.read() is logical, intended for single tones 
+    public async read(): Promise<any>{
+        
+    }
+}
+```
 
 ## License
 
