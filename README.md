@@ -16,7 +16,15 @@ The library focus is on helping the programmer write a service with minimium cod
 
 ## How to use
 
-coming..
+The special thing about this library is the fact that you can nest collections within collection. The library knows how to propagate within your collections untill it reaches the wanted resource, for example:
+
+```
+GET /users/15/books/4/pages/1
+```
+
+First will get user with id `15` from `users` collection, then book with id `4` from the user's books collection and finally will get page with id `1` from the book's pages collection.
+
+The same behavior will take place for the other HTTP requests.
 
 ## Examples
 
