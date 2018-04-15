@@ -92,7 +92,7 @@ export class User implements ICrudItem{
 An example for creating a collection: 
 
 ``` Typescript
-export class UsersCollection extends ICrudItem{
+export class UsersCollection extends ICrudCollection{
     protected _users: Map<string, User>;    
 
     public async create(item: any): Promise<string> {
