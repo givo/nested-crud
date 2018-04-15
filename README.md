@@ -2,6 +2,8 @@
 
 ## Introduction
 
+The library is on it's very early days but stable, code comments are partial, missing documentation, contribution guide and a number of features.
+
 `nested-crud` is a library which provides you the tools to create a REST curd service with support for single tones and collections within your application.
 
 The library focus is on helping the programmer write a service with minimium code by supporting nested REST collections.
@@ -11,10 +13,10 @@ The library focus is on helping the programmer write a service with minimium cod
 * Collection interface 
 * Single tone interface
 * Nested collections
-* Single tone and collection helpers
+* In memory single tone and collection implementation included 
 * `express` based
 
-## How to use
+## How does it works
 
 The special thing about this library is the fact that you can nest collections within collection. The library knows how to propagate within your collections untill it reaches the wanted resource, for example:
 
@@ -24,11 +26,16 @@ GET /users/15/books/4/pages/1
 
 First will get user with id `15` from `users` collection, then book with id `4` from the user's books collection and finally will get page with id `1` from the book's pages collection.
 
-The same behavior will take place for the other HTTP requests.
+The same behavior will take place for the other HTTP requests..
+
+The magic is done by using an OOP aproach. You simply need to implement two interfaces:
+
+* `ICrudCollection` in your collection 
+* `ICrudItem` in each item within a collection
 
 ## Examples
 
-Create a class which contains a collection and is contained within another collection:
+An example for implementing a class which contains a collection and is contained within another collection:
 
 ``` typescript
 export class User implements ICrudItem{
@@ -79,6 +86,24 @@ export class User implements ICrudItem{
     public async read(): Promise<any>{
         
     }
+}
+```
+
+An example for creating a collection: 
+
+``` Typescript
+export class UsersCollection extends ICrudItem{
+    protected _users: Map<string, User>;    
+
+    public async create(item: any): Promise<string> {
+        let newUser = new User((this._itemsCounter++).toString(), item.name);        
+
+        this._items.set(newUser.id, newUser);
+
+        return newUser.id;
+    }
+    
+    
 }
 ```
 
