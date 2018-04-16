@@ -1,6 +1,6 @@
 {
   "name": "@givo/nested-crud",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Create a REST crud interface service with nested collections support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
