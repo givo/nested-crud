@@ -12,9 +12,16 @@ The library focus is on helping the programmer write a service with minimium cod
 
 * Collection interface 
 * Single tone interface
-* Nested collections
+* **Nested collections**
 * In memory single tone and collection implementation included 
-* `express` based
+* **express** based
+* written in **Typescript**
+
+## Roadmap
+
+* supoort for `after` and `before` middlewares.
+* mongoose
+* `filter` and `limit` support in `ItemsManager<T>`
 
 ## How does it works
 
@@ -33,16 +40,15 @@ The magic is done by using an OOP aproach. You simply need to implement two inte
 * `ICrudCollection` in your collection 
 * `ICrudItem` in each item within a collection
 
+Then simply register your collection using `cruder.collection()` (new name will be chosen in the near future)
+
 ## Examples
 
 An example for implementing a class which contains a collection and is contained within another collection:
 
 ``` typescript
-export class User implements ICrudItem{
-    protected _booksCounter = 0;
-    
+export class User implements ICrudItem{   
     protected _id: string;
-    protected books: BooksCollection;    
     
     // assignment to `id` is only allowed when using the constructor
     public get id(): string{
@@ -55,7 +61,6 @@ export class User implements ICrudItem{
         this.name = name;
         this.height = height;        
         this.privateMember = privateMember;
-        this.books = new BooksCollection();
     }
     
     // return a description of user and not a full representation
@@ -103,8 +108,44 @@ export class UsersCollection extends ICrudCollection{
         return newUser.id;
     }
     
+    public async readById(id: string): Promise<IDescriptor> {
+        return <T>this._items.get(id);
+    }
     
+    // return all items
+    public async readMany(limit?: number | undefined, filter?: IParam[] | undefined): Promise<IDescriptor[]> {
+        let items: any[] = new Array<any>();
+        
+        this._items.forEach((item: T, id: string) => {
+            items.push(item);
+        });
+
+        return items;
+    }
+    ...
+    ...
+    ...
 }
+```
+
+How to register:
+
+``` Typescript
+let app = express();
+let cruder = new Cruder();
+
+let usersManager = new UsersCollection();
+
+let usersREST = cruder.collection('/users/:userId', usersManager);
+let booksREST = cruder.collection('/users/:userId/books/:bookId', usersManager);
+let pagesREST = cruder.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
+app.use(usersREST);
+app.use(booksREST);
+app.use(pagesREST);
+
+app.listen(3000, () => {
+    console.log('listening on port 3000');
+});
 ```
 
 ## License
