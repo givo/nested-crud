@@ -101,7 +101,7 @@ export class User implements ICrudItem{
 
 An example for creating a collection: 
 
-``` Typescript
+``` typescript
 export class UsersCollection extends ICrudCollection{
     protected _users: Map<string, User>;    
 
@@ -135,7 +135,7 @@ export class UsersCollection extends ICrudCollection{
 
 How to register:
 
-``` Typescript
+``` typescript
 let app = express();
 let cruder = new Cruder();
 
