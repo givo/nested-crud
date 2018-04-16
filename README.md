@@ -51,6 +51,9 @@ An example for implementing a class which contains a collection and is contained
 export class User implements ICrudItem{   
     protected _id: string;
     
+    // users/:userId/books/:bookId
+    protected books: BooksCollection;
+    
     // assignment to `id` is only allowed when using the constructor
     public get id(): string{
         return this._id;
@@ -62,6 +65,7 @@ export class User implements ICrudItem{
         this.name = name;
         this.height = height;        
         this.privateMember = privateMember;
+        this.books = new BooksCollection();
     }
     
     // return a description of user and not a full representation
@@ -88,7 +92,7 @@ export class User implements ICrudItem{
         return this;
     }
     
-    // no need to implement ICrudItem.read() is logical, intended for single tones 
+    // no need to implement ICrudItem.read(), the function is logical, intended for single tones 
     public async read(): Promise<any>{
         
     }
