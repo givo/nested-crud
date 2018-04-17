@@ -26,13 +26,17 @@ The library focus is on helping the programmer write a service with minimium cod
 
 ## How does it works
 
+### The Magic
+
 The special thing about this library is the fact that you can nest collections within collections. The library knows how to propagate within your collections untill it reaches the desired resource, for example:
 
 ```
 GET /users/15/books/4/pages/1
 ```
 
-First the library will get the user with id `15` from a registered `users` collection, then book with id `4` from the user's books collection and finally will get the page with id `1` from the book's pages collection.
+* First the library will get the user with id `15` from a registered `users` collection
+* Then book with id `4` from the user's books collection
+* And Finally will get the page with id `1` from the book's pages collection.
 
 The same behavior will take place for all other HTTP requests..
 
@@ -42,6 +46,28 @@ The magic is done by using an OOP aproach. You simply need to implement two inte
 * `ICrudItem` in each item within a collection
 
 Then register your collection using `cruder.collection()` (new name will be chosen in the near future)
+
+### Item Description
+
+Every item that is returned to the client should have a description. An item description is the way you expose the item in your API. Most of the time you'll want to hide some internal members. In order to return a description you simply need to override `describe()` function and return a new object which holds only the members that you want to expose, for example:
+
+``` typescript
+class User implements ICrudItem{
+    protected name: string;
+    protected height: number;
+    protected isAdmin: boolean;
+    
+    public describe(): any{
+        return {
+            name: this.name;
+            height: this.height;
+            // hide `isAdmin` member
+        }
+    }
+}
+```
+
+**A good practice is to expect the client to send the same structure in each API route.**
 
 ## Examples
 
