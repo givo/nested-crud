@@ -1,10 +1,8 @@
-# sailer
-
 ## Introduction
 
 The library is on it's very early days but stable, code comments are partial, missing documentation, contribution guide and a number of features.
 
-`nested-crud` is a library which provides you the tools to create a REST curd service with support for single tones and collections within your application.
+`sailer` is a library which provides you the tools to create a REST curd service with support for single tones and collections within your application.
 
 The library focus is on helping the programmer write a service with minimium code by supporting nested REST collections.
 
