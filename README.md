@@ -49,7 +49,7 @@ Then register your collection using `cruder.collection()` (new name will be chos
 
 ### Item Description
 
-Every item that is returned to the client should have a description. An item description is the way you expose the item in your API. Most of the time you'll want to hide some internal members. In order to return a description you simply need to override `describe()` function and return a new object which holds only the members that you want to expose, for example:
+Every item that is returned to the client should have a description. An item description is the way you expose the item in your API. Most of the time you'll want to hide some internal members and in that case you simply need to return a description in `describe()` function and return a new object which holds only the members that you want to expose, for example:
 
 ``` typescript
 class User implements ICrudItem{
