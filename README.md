@@ -159,7 +159,7 @@ export class UsersCollection extends ICrudCollection{
 }
 ```
 
-How to register:
+How to register your routes:
 
 ``` typescript
 let app = express();
