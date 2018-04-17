@@ -94,6 +94,16 @@ export class User implements ICrudItem{
         this.books = new BooksCollection();
     }
     
+    public getCollection(collectionName: string): ICrudCollection | undefined{
+        let collection: ICrudCollection;
+        
+        if(collectionName == "books"){
+            collection = this.books;
+        }
+        
+        return collection;
+    }
+    
     // return a description of user and not a full representation
     public describe(): any{
         let description = {
