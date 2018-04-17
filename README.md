@@ -1,3 +1,5 @@
+<img src="https://github.com/givo/sailer/blob/master/sailer-logo.png?raw=true" width="288">
+
 ## Introduction
 
 The library is on it's very early days but stable, code comments are partial, missing documentation, contribution guide and a number of features.
