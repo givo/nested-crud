@@ -69,6 +69,36 @@ class User implements ICrudItem{
 
 **A good practice is to expect the client to send the same structure in each API route.**
 
+## API
+
+* Data formatting is `JSON` based therefore server returns data in JSON format and received data in JSON. 
+
+* The action mapping is as follows: (users collection) 
+
+```
+POST    /users              ->  create a new user
+GET     /users/:userId      ->  get user with specific id
+GET     /users              ->  get multiple users (support for filter and limit soon)
+PUT     /users/:userId      ->  update a specific user
+PUT     /users              ->  update multiple users (support for filter and limit soon)
+DELETE  /users/:userId      ->  delete a specific user
+DELETE  /users/             ->  delete multiple users (support for filter and limit soon)
+```
+
+* The action for nested items is the same:
+
+```
+POST    /users/:userId/books/           ->  create a new book inside a specific user's books
+GET     /users/:userId/books/:bookId    ->  get a specific book from a specific user's books
+GET     /users/:userId/books            ->  get multiple books of a specific user (support for filter and limit soon)
+PUT     /users/:userId/books/:bookId    ->  update a specific book from a specific users' books
+PUT     /users/:userId/books            ->  update multiple books of a specific (support for filter and limit soon)
+DELETE  /users/:userId/books/:bookId    ->  delete a specific book from a specific user's book
+DELETE  /users/:userId/books            ->  delete multiple books of a specific user (support for filter and limit soon)
+```
+
+* And so on for any nesting level..
+
 ## Examples
 
 An example for implementing a class which contains a collection and is contained within another collection:
