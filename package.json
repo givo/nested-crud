@@ -21,7 +21,13 @@
     "typescript",
     "node",
     "http",
-    "express"
+    "express",
+    "create",
+    "read",
+    "update",
+    "delete",
+    "resource",
+    "middleware"
   ],
   "author": {
     "name": "Matan Givoni",
