@@ -2,11 +2,11 @@
 
 ## Introduction
 
+`sailer` is a server-side library for creating a RESTful API service with support for nested resources. The library focus is on helping the programmer write a RESTful service with minimium code.
+
+## Important Note
+
 The library is on it's very early days but stable. Code comments are partial, documentation is being written, contribution guide is missing and a number of features.
-
-`sailer` is a server-side library for creating a RESTful API service with support for nested resources.
-
-The library focus is on helping the programmer write a RESTful service with minimium code.
 
 ## Features
 
