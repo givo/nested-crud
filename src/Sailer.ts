@@ -7,16 +7,30 @@ import { queryFilter } from './QueryStringFilter';
 import { IParam } from './abstract/IParam';
 import * as bodyParser from 'body-parser';
 
-
+/**
+ * Represents an instance which creates express routers for RESTful single tones and collections.
+ * 
+ * @export
+ * @class Sailer
+ */
 export class Sailer {
     public static readonly DefaultLimit: number = 100;
 
     private _parentCollections: Map<string, ICrudCollection>;
 
+
     constructor() {
         this._parentCollections = new Map<string, ICrudCollection>();
     }
 
+    /**
+     * Creates a single tone route.
+     * 
+     * @param {string} url A url template without route parameters
+     * @param {ICrudItem} singleTone The single tone resource 
+     * @returns {express.Router} 
+     * @memberof Sailer
+     */
     public singleTone(url: string, singleTone: ICrudItem): express.Router {
         let router: express.Router = express.Router();
 
@@ -53,17 +67,28 @@ export class Sailer {
         return router;
     }
 
+    /**
+     * Iterates over the request's url and get all the collections and items in the path. 
+     * 
+     * @private
+     * @param {string} url 
+     * @param {express.Request} req 
+     * @param {ICrudCollection} parentCollection 
+     * @memberof Sailer
+     */
     private async travelUrl(url: string, req: express.Request, parentCollection: ICrudCollection) {        
         let startIdx = 1;
         let urlSplit = url.split('/');
 
         let currentSubCollection: any = parentCollection;
 
-        // append `sailer` member to `req`
+        // append `sailer` member to `req` on first run
         if (!(<any>req).sailer) {
             (<any>req).sailer = {};
         }
-        // when the url with :itemId was caught it means the route to url with only /collection was caught first, so a travel was already taken place
+        // get the last collection of the last iteration
+        // (when a url with /:itemId at the end was caught it means a route with only /collection at the end was caught first,
+        // therefore a travel was already taken place)
         else {
             currentSubCollection = (<any>req).sailer.lastCollection.collection;
             startIdx = (<any>req).sailer.lastCollection.index;
@@ -102,6 +127,14 @@ export class Sailer {
         (<any>req).sailer.lastItem = currentItem;
     }
 
+    /**
+     * Creates a collection resource route.
+     * 
+     * @param {string} url A url template with route parameters
+     * @param {ICrudCollection} [parentCollection]  The resource collection
+     * @returns {express.Router} 
+     * @memberof Sailer
+     */
     public collection(url: string, parentCollection?: ICrudCollection): express.Router {
         let router: express.Router = express.Router();
         let urlSplit = url.split('/');
