@@ -20,8 +20,10 @@ The library focus is on helping the programmer write a service with minimium cod
 ## Roadmap
 
 * supoort for `after` and `before` middlewares.
-* mongoose
+* support for `limit` and `filter`
 * `filter` and `limit` support in `ItemsManager<T>`
+* mongoose
+* sailer api for error handling 
 * support for `HTTP-Patch`
 
 ## How does it work
@@ -98,6 +100,12 @@ DELETE  /users/:userId/books            ->  delete multiple books of a specific 
 ```
 
 * And so on for any nesting level..
+
+## Error handling
+
+Currently any error that is thrown from your classes is catched by `sailer` and returned to the client with http 500 status code `INTERNAL_SERVER_ERROR` and the thrown object as the response body in `JSON` format.
+
+**An error throwing api will be added in the near future.**
 
 ## Examples
 
