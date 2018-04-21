@@ -8,7 +8,7 @@ import { IParam } from './abstract/IParam';
 import * as bodyParser from 'body-parser';
 
 
-export class Cruder {
+export class Sailer {
     public static readonly DefaultLimit: number = 100;
 
     private _parentCollections: Map<string, ICrudCollection>;
@@ -59,23 +59,23 @@ export class Cruder {
 
         let currentSubCollection: any = parentCollection;
 
-        // append `cruder` member to `req`
-        if (!(<any>req).cruder) {
-            (<any>req).cruder = {};
+        // append `sailer` member to `req`
+        if (!(<any>req).sailer) {
+            (<any>req).sailer = {};
         }
         // when the url with :itemId was caught it means the route to url with only /collection was caught first, so a travel was already taken place
         else {
-            currentSubCollection = (<any>req).cruder.lastCollection.collection;
-            startIdx = (<any>req).cruder.lastCollection.index;
+            currentSubCollection = (<any>req).sailer.lastCollection.collection;
+            startIdx = (<any>req).sailer.lastCollection.index;
         }
 
-        // get each collection from it's parent and add it to `cruderCollections`
+        // get each collection from it's parent and add it to `sailerCollections`
         let currentItem: any;   
         let i: number;     
         for (i = startIdx; i < urlSplit.length; i += 2) {
-            // append current collection to `req.cruder`
+            // append current collection to `req.sailer`
             let currentCollectionName: string = urlSplit[i];
-            (<any>req).cruder[urlSplit[i]] = {index: i, collection: currentSubCollection };
+            (<any>req).sailer[urlSplit[i]] = {index: i, collection: currentSubCollection };
 
             // if `itemId` is provided in the url get the item
             let itemId: string = urlSplit[i + 1];
@@ -97,9 +97,9 @@ export class Cruder {
             }
         }
 
-        // save the desired item and the last collection in `req.cruder`
-        (<any>req).cruder.lastCollection = { index: i - 2, collection: currentSubCollection };
-        (<any>req).cruder.lastItem = currentItem;
+        // save the desired item and the last collection in `req.sailer`
+        (<any>req).sailer.lastCollection = { index: i - 2, collection: currentSubCollection };
+        (<any>req).sailer.lastItem = currentItem;
     }
 
     public collection(url: string, parentCollection?: ICrudCollection): express.Router {
@@ -173,7 +173,7 @@ export class Cruder {
             let item: any = req.body;
 
             try {
-                let id: string = await (<any>req).cruder.lastCollection.collection.create(item);
+                let id: string = await (<any>req).sailer.lastCollection.collection.create(item);
                 res.json({ id: id });
             }
             catch (err) {
@@ -186,7 +186,7 @@ export class Cruder {
         // read many 
         // 
         router.get(collectionUrl, async (req: express.Request, res: express.Response) => {
-            let limit: number = Cruder.DefaultLimit;
+            let limit: number = Sailer.DefaultLimit;
             let filter: Array<IParam>;
 
             // set limit
@@ -197,7 +197,7 @@ export class Cruder {
             filter = queryFilter(req);
 
             try {
-                let items: Array<IDescriptor> = await (<any>req).cruder.lastCollection.collection.readMany(limit, filter);
+                let items: Array<IDescriptor> = await (<any>req).sailer.lastCollection.collection.readMany(limit, filter);
                 res.json(items.map((item, i) => {
                     return item.describe();
                 }));
@@ -213,7 +213,7 @@ export class Cruder {
         //
         router.get(url, (req: express.Request, res: express.Response) => {
             try {
-                let item: IDescriptor = (<any>req).cruder.lastItem;
+                let item: IDescriptor = (<any>req).sailer.lastItem;
                 res.json(item.describe());
             }
             catch (err) {
@@ -226,7 +226,7 @@ export class Cruder {
         // update many
         //
         router.put(collectionUrl, async (req: express.Request, res: express.Response) => {
-            let limit: number = Cruder.DefaultLimit;
+            let limit: number = Sailer.DefaultLimit;
             let filter: Array<IParam>;
             let fields: Array<IParam>;            // TODO: take fields from req
 
@@ -240,7 +240,7 @@ export class Cruder {
             fields = req.body;
 
             try {
-                let updated: number = await (<any>req).cruder.lastCollection.collection.updateMany(fields, filter, limit);
+                let updated: number = await (<any>req).sailer.lastCollection.collection.updateMany(fields, filter, limit);
                 res.json({ count: updated });
             }
             catch (err) {
@@ -257,7 +257,7 @@ export class Cruder {
             let itemId: string = req.params[paramId];
 
             try {
-                let updatedItem: IDescriptor = await (<any>req).cruder.lastCollection.collection.updateById(itemId, fields);
+                let updatedItem: IDescriptor = await (<any>req).sailer.lastCollection.collection.updateById(itemId, fields);
                 res.json(updatedItem.describe());
             }
             catch (err) {
@@ -281,7 +281,7 @@ export class Cruder {
             filter = queryFilter(req);
 
             try {
-                let deleted = await (<any>req).cruder.lastCollection.collection.deleteMany(limit, filter);
+                let deleted = await (<any>req).sailer.lastCollection.collection.deleteMany(limit, filter);
                 res.json({ count: deleted });
             }
             catch (err) {
@@ -297,7 +297,7 @@ export class Cruder {
             let id: string = req.params[paramId];
 
             try {
-                let deletedItem: IDescriptor = await (<any>req).cruder.lastCollection.collection.deleteById(id);
+                let deletedItem: IDescriptor = await (<any>req).sailer.lastCollection.collection.deleteById(id);
                 res.json(deletedItem.describe());
             }
             catch (err) {

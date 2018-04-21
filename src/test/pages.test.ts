@@ -1,20 +1,20 @@
 import { expect } from 'chai';
 import * as express from 'express';
-import { Cruder } from '../index';
-import { User } from './foundations/User';
+import { Sailer } from '../index';
+import { User } from './entities/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { Book } from './foundations/Book';
-import { Page } from './foundations/Page';
+import { Book } from './entities/Book';
+import { Page } from './entities/Page';
 import { request, getBody } from './helper';
-import { UsersCollection } from './foundations/UsersCollection';
-import { PagesCollection } from './foundations/PagesCollection';
+import { UsersCollection } from './entities/UsersCollection';
+import { PagesCollection } from './entities/PagesCollection';
 
 let port = 3002;
 let server: http.Server;
 let app = express();
-let cruder = new Cruder();
+let sailer = new Sailer();
 
 let usersManager = new UsersCollection();
 
@@ -46,7 +46,7 @@ usersManager.create(new User("Maor", 180));
 
 describe("Pages", () => {
     before(async () => {
-        let paegsREST = cruder.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
+        let paegsREST = sailer.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
         app.use(paegsREST);
 
         server = app.listen(port);

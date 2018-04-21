@@ -1,21 +1,21 @@
 import { expect } from 'chai';
 import * as express from 'express';
-import { Cruder } from '../index';
+import { Sailer } from '../index';
 import * as http from 'http';
-import { Sun } from './foundations/Sun';
+import { Sun } from './entities/Sun';
 import { request, getBody } from './helper';
 
 let port = 3003;
 
 let server: http.Server;
 let app = express();
-let cruder = new Cruder();
+let sailer = new Sailer();
 
 let sun = new Sun(10000000, 4444444444);
 
 describe("Sun", () => {
     before(async () => {
-        let sunREST = cruder.singleTone("/sun", sun);
+        let sunREST = sailer.singleTone("/sun", sun);
         app.use(sunREST);
 
         server = app.listen(port);

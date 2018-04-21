@@ -1,19 +1,19 @@
 import { expect } from 'chai';
 import * as express from 'express';
-import { Cruder } from '../index';
-import { User } from './foundations/User';
+import { Sailer } from '../index';
+import { User } from './entities/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { Book } from './foundations/Book';
+import { Book } from './entities/Book';
 import { request, getBody } from './helper';
-import { UsersCollection } from './foundations/UsersCollection';
+import { UsersCollection } from './entities/UsersCollection';
 
 let port = 3001;
 
 let server: http.Server;
 let app = express();
-let cruder = new Cruder();
+let sailer = new Sailer();
 
 let usersManager = new UsersCollection();
 
@@ -31,7 +31,7 @@ usersManager.create(new User("Shimon", 180));
 
 describe("Books", () => {
     before(async () => {
-        let booksREST = cruder.collection('/users/:userId/books/:bookId', usersManager);
+        let booksREST = sailer.collection('/users/:userId/books/:bookId', usersManager);
         app.use(booksREST);
 
         server = app.listen(port);

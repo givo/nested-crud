@@ -1,16 +1,16 @@
 import { expect } from 'chai';
 import * as express from 'express';
-import { Cruder } from '../index';
-import { User } from './foundations/User';
+import { Sailer } from '../index';
+import { User } from './entities/User';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
 import { ItemsManager } from '../helpers/ItemsManager';
 import { getBody } from './helper';
-import { UsersCollection } from './foundations/UsersCollection';
+import { UsersCollection } from './entities/UsersCollection';
 
 let app = express();
-let cruder = new Cruder();
+let sailer = new Sailer();
 let usersManager = new UsersCollection();
 
 usersManager.create(new User("Yosi", 174));
@@ -29,7 +29,7 @@ describe("Users", () => {
             return user.describe();
         });
 
-        let usersREST = cruder.collection('/users/:userId', usersManager);
+        let usersREST = sailer.collection('/users/:userId', usersManager);
         app.use(usersREST);
 
         server = app.listen(3000);

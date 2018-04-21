@@ -5,4 +5,4 @@ export { ICrudItem } from './abstract/ICrudItem';
 export { IParam } from './abstract/IParam';
 export { BasicItem } from './helpers/BasicItem';
 export { ItemsManager } from './helpers/ItemsManager';
-export { Cruder } from './Cruder';
+export { Sailer } from './Sailer';

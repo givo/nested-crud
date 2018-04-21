@@ -3,16 +3,16 @@ import * as express from 'express';
 import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { Cruder } from '../Cruder';
-import { User } from './foundations/User';
-import { Book } from './foundations/Book';
-import { Page } from './foundations/Page';
-import { UsersCollection } from './foundations/UsersCollection';
-import { PagesCollection } from './foundations/PagesCollection';
+import { Sailer } from '../Sailer';
+import { User } from './entities/User';
+import { Book } from './entities/Book';
+import { Page } from './entities/Page';
+import { UsersCollection } from './entities/UsersCollection';
+import { PagesCollection } from './entities/PagesCollection';
 
 (async () => {
     let app = express();
-    let cruder = new Cruder();
+    let sailer = new Sailer();
     
     // "server is the user manager"
     let usersManager = new UsersCollection();
@@ -43,9 +43,9 @@ import { PagesCollection } from './foundations/PagesCollection';
     usersManager.create(new User("Shlomi", 188));
     usersManager.create(new User("Shimon", 180));
     
-    let usersREST = cruder.collection('/users/:userId', usersManager);
-    let booksREST = cruder.collection('/users/:userId/books/:bookId', usersManager);
-    let pagesREST = cruder.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
+    let usersREST = sailer.collection('/users/:userId', usersManager);
+    let booksREST = sailer.collection('/users/:userId/books/:bookId', usersManager);
+    let pagesREST = sailer.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
     app.use(usersREST);
     app.use(booksREST);
     app.use(pagesREST);
