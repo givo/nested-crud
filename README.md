@@ -2,11 +2,11 @@
 
 ## Introduction
 
-The library is on it's very early days but stable, code comments are partial. missing documentation, contribution guide and a number of features.
+The library is on it's very early days but stable. code comments are partial, missing documentation, contribution guide and a number of features.
 
-`sailer` is a library which provides you the tools to create a REST curd service with support for single tones and collections within your application.
+`sailer` is a server-side library for creating a RESTful API service with support for nested resources.
 
-The library focus is on helping the programmer write a service with minimium code by supporting nested REST collections.
+The library focus is on helping the programmer write a RESTful service with minimium code.
 
 ## Features
 
