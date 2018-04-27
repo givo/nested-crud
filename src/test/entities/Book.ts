@@ -8,7 +8,8 @@ export class Book implements ICrudItem{
     public name: string;
     public pages: PagesCollection;
     
-    constructor(name: string = " "){        
+    constructor(id: string, name: string = " "){        
+        this.id = id;
         this.name = name;
         this.pages = new PagesCollection();
     }
@@ -39,8 +40,8 @@ export class Book implements ICrudItem{
         return this;
     }
 
-    public getCollection(collectionName: string): ICrudCollection | undefined {
-        let collection: ICrudCollection | undefined;
+    public getCollection(collectionName: string): ICrudCollection<ICrudItem> | undefined {
+        let collection: ICrudCollection<ICrudItem> | undefined;
 
         if(collectionName == "pages"){
             collection = this.pages;

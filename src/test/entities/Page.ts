@@ -1,4 +1,3 @@
-import { BasicItem } from "../../helpers/BasicItem";
 import { ICrudItem, ICrudCollection } from "../../index";
 import { IDescriptor } from "../../abstract/IDescriptor";
 
@@ -13,7 +12,8 @@ export class Page implements ICrudItem{
      * @param {string} [content=" "] 
      * @memberof Page
      */
-    constructor(number: number = -1, content: string = " "){        
+    constructor(id: string, number: number = -1, content: string = " "){        
+        this.id = id;
         this.number = number;
         this.content = content;
     }
@@ -32,7 +32,7 @@ export class Page implements ICrudItem{
         return this;
     }
 
-    public getCollection(collectionName: string): ICrudCollection | undefined {
+    public getCollection(collectionName: string): ICrudCollection<ICrudItem> | undefined {
         return undefined;
     }
 

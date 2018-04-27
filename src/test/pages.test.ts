@@ -10,6 +10,7 @@ import { Page } from './entities/Page';
 import { request, getBody } from './helper';
 import { UsersCollection } from './entities/UsersCollection';
 import { PagesCollection } from './entities/PagesCollection';
+import { BooksCollection } from './entities/BooksCollection';
 
 let port = 3002;
 let server: http.Server;
@@ -17,37 +18,36 @@ let app = express();
 let sailer = new Sailer();
 
 let usersManager = new UsersCollection();
-
-// create beni
-let beni = new User("Beni", 165);
-
-// create beni's book
-let beniBooks = beni.getCollection("books");
-beniBooks.create(new Book("Harry Potter"));
-beniBooks.create(new Book("Lord of the Rings"));
-let book = new Book("Rich Father Poor Father");
-beniBooks.create(book);
-
-
-// create book's pages
-let pages = <PagesCollection>book.getCollection("pages");
-pages.create(new Page(0));
-pages.create(new Page(1));
-pages.create(new Page(2));
-pages.create(new Page(3));
-pages.create(new Page(4));
-pages.create(new Page(5));
-
-usersManager.create(new User("Yosi", 180));
-usersManager.create(beni);
-usersManager.create(new User("Shlomi", 180));
-usersManager.create(new User("Maor", 180));
+let beni: User;
+let beniBooks: BooksCollection;
+let book: Book;
+let pages: PagesCollection;
 
 
 describe("Pages", () => {
     before(async () => {
         let paegsREST = sailer.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
         app.use(paegsREST);
+
+        usersManager.create({ name: "Yosi", height: 174 });
+        usersManager.create({ name: "Beni", height: 165 });
+        usersManager.create({ name: "Shlomi", height: 188 });
+        usersManager.create({ name: "Shimon", height: 190 });
+
+        beni = <User>await usersManager.readById("1");
+        beniBooks = <BooksCollection>beni.getCollection("books");
+        await beniBooks.create({ name: "Harry Potter" });
+        await beniBooks.create({ name: "Lord of the Rings" });
+        await beniBooks.create({ name: "Rich Father Poor Father" });
+        book = <Book>await beniBooks.readById("2");
+
+        pages = <PagesCollection>book.getCollection("pages");
+        pages.create({ number: 0 });
+        pages.create({ number: 1 });
+        pages.create({ number: 2 });
+        pages.create({ number: 3 });
+        pages.create({ number: 4 });
+        pages.create({ number: 5 });
 
         server = app.listen(port);
     });
@@ -63,10 +63,14 @@ describe("Pages", () => {
         it('should create a new page of book 2 of user 1', async function () {
             this.timeout(10000);
 
-            let newPage: Page = new Page(50, "Avishai is the king");
-
-            let reqBody = JSON.stringify(newPage);
-            let resBody = await request(`http://127.0.0.1/users/1/books/2/pages`, port, 'POST', reqBody);
+            let reqBody = {
+                fields: {
+                    content: "Avishai is the king",
+                    number: 50,                    
+                }
+            };   
+            
+            let resBody = await request(`http://127.0.0.1/users/1/books/2/pages`, port, 'POST', JSON.stringify(reqBody));
 
             let newPageId = JSON.parse(resBody).id;
             expect(newPageId, `Didn't received page id 6`).to.equal("6");
@@ -112,15 +116,16 @@ describe("Pages", () => {
         it('should update page with id 2 of book 2 of user 1', async function () {
             this.timeout(10000);
 
-            let fields = {
-                content: "Avishai is the king",
-                id: (<Page>await pages.readById('2')).id
+            let reqBody = {
+                fields: {
+                    content: "Avishai is the king",
+                    id: (<Page>await pages.readById('2')).id
+                }
             };            
-
-            let reqBody = JSON.stringify(fields);
-            let resBody = await request(`http://127.0.0.1/users/1/books/2/pages/2`, port, 'PUT', reqBody);
             
-            expect((await pages.readById('2') as Page).content, `Didn't update page with id 2`).to.equal(fields.content);
+            let resBody = await request(`http://127.0.0.1/users/1/books/2/pages/2`, port, 'PUT', JSON.stringify(reqBody));
+            
+            expect((await pages.readById('2') as Page).content, `Didn't update page with id 2`).to.equal(reqBody.fields.content);
         });
     });
 
@@ -131,17 +136,18 @@ describe("Pages", () => {
         it('should update all pages of book 2 of user 1', async function () {
             this.timeout(10000);
 
-            let fields = {
-                content: "Avishai is the prince"
+            let reqBody = {
+                fields: {
+                    content: "Avishai is the prince"
+                }
             };
-
-            let reqBody = JSON.stringify(fields);
-            let resBody = await request(`http://127.0.0.1/users/1/books/2/pages`, port, 'PUT', reqBody);
+        
+            let resBody = await request(`http://127.0.0.1/users/1/books/2/pages`, port, 'PUT', JSON.stringify(reqBody));
 
             resBody = JSON.parse(resBody).count;
             expect(resBody, `Didn't update all pages of book 2`).to.equal(7);
 
-            expect((await pages.readById('2') as Page).content, `Didn't update page with id 2`).to.equal(fields.content);
+            expect((await pages.readById('2') as Page).content, `Didn't update page with id 2`).to.equal(reqBody.fields.content);
         });
     });
 
