@@ -103,7 +103,7 @@ DELETE  /users/:userId/books            ->  delete multiple books of a specific 
 
 ## Error handling
 
-Currently any error that is thrown from your classes is catched by `sailer` and returned to the client with http 500 status code `INTERNAL_SERVER_ERROR` and the thrown object as the response body in `JSON` format.
+Currently any error that is thrown from your classes is catched by `sailer` and returned to the client with the thrown object in the response body with http 500 status code - `INTERNAL_SERVER_ERROR`.
 
 **An error throwing api will be added in the near future.**
 
