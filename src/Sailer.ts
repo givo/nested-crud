@@ -3,9 +3,8 @@ import * as HttpStatus from 'http-status-codes';
 import { ICrudCollection } from './abstract/ICrudCollection';
 import { IDescriptor } from './abstract/IDescriptor';
 import { ICrudItem } from './abstract/ICrudItem';
-import { queryFilter } from './QueryStringFilter';
-import { IParam } from './abstract/IParam';
 import * as bodyParser from 'body-parser';
+import { FilterOperators } from './abstract/FilterOperators';
 
 /**
  * Represents an instance which creates express routers for RESTful single tones and collections.
@@ -220,14 +219,16 @@ export class Sailer {
         // 
         router.get(collectionUrl, async (req: express.Request, res: express.Response) => {
             let limit: number = Sailer.DefaultLimit;
-            let filter: Array<IParam>;
+            let filter: any;
 
             // set limit
-            if ((<any>req.param).limit) {
-                limit = (<any>req.param).limit;
+            if (req.query.limit) {
+                limit = req.query.limit;
             }
             // set filter
-            filter = queryFilter(req);
+            if(req.query.filter){
+                filter = JSON.parse(req.query.filter);
+            }
 
             try {
                 let items: Array<IDescriptor> = await (<any>req).sailer.lastCollection.collection.readMany(limit, filter);
@@ -260,17 +261,21 @@ export class Sailer {
         //
         router.put(collectionUrl, async (req: express.Request, res: express.Response) => {
             let limit: number = Sailer.DefaultLimit;
-            let filter: Array<IParam>;
-            let fields: Array<IParam>;            // TODO: take fields from req
+            let filter: any;
+            let fields: any;            // TODO: take fields from req
 
             // get limit
-            if ((<any>req.param).limit) {
-                limit = (<any>req.param).limit;
+            if (req.body.limit) {
+                limit = req.body.limit;
             }
             // get filter
-            filter = queryFilter(req);
+            if(req.body.filter){
+                filter = req.body.filter;
+            }
             // get fields
-            fields = req.body;
+            if(req.body.fields){
+                fields = req.body.fields;
+            }
 
             try {
                 let updated: number = await (<any>req).sailer.lastCollection.collection.updateMany(fields, filter, limit);
@@ -286,7 +291,7 @@ export class Sailer {
         // update by id
         //
         router.put(url, async (req: express.Request, res: express.Response) => {
-            let fields: any = req.body;
+            let fields: any = req.body.fields;
             let itemId: string = req.params[paramId];
 
             try {
@@ -304,14 +309,16 @@ export class Sailer {
         //
         router.delete(collectionUrl, async (req: express.Request, res: express.Response) => {
             let limit: number = 0;
-            let filter: Array<IParam>;
+            let filter: any;
 
-            // set limit
-            if ((<any>req.param).limit) {
-                limit = (<any>req.param).limit;
+            // get limit
+            if (req.body.limit) {
+                limit = req.body.limit;
             }
-            // set filter
-            filter = queryFilter(req);
+            // get filter
+            if(req.body.filter){
+                filter = req.body.filter;
+            }
 
             try {
                 let deleted = await (<any>req).sailer.lastCollection.collection.deleteMany(limit, filter);

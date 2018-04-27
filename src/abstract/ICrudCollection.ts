@@ -1,5 +1,4 @@
 import { IDescriptor } from "./IDescriptor";
-import { IParam } from "./IParam";
 
 export interface ICrudCollection extends IDescriptor {
     /**
@@ -15,11 +14,11 @@ export interface ICrudCollection extends IDescriptor {
      * Returns all the items who match the specified `filter` and limits the number of returned item to `limit`.
      * 
      * @param {number} [limit] 
-     * @param {Array<IParam>} [filter] 
+     * @param {any} [filter] 
      * @returns {Promise<Array<IDescriptor>>} 
      * @memberof ICrudCollection
      */
-    readMany(limit?: number, filter?: Array<IParam>): Promise<Array<IDescriptor>>;
+    readMany(limit?: number, filter?: any): Promise<Array<IDescriptor>>;
 
     /**
      * Returns the item that is represented by the specified `id`.
@@ -35,11 +34,11 @@ export interface ICrudCollection extends IDescriptor {
      * 
      * @param {Array<IParam>} fields The fields to update
      * @param {number} [limit] 
-     * @param {Array<IParam>} [filter] 
+     * @param {any} [filter] 
      * @returns {Promise<number>} 
      * @memberof ICrudCollection
      */
-    updateMany(fields: any, limit?: number, filter?: Array<IParam>): Promise<number>;
+    updateMany(fields: any, limit?: number, filter?: any): Promise<number>;
 
     /**
      * Updates the item represeted by the specified `id`.
@@ -64,9 +63,9 @@ export interface ICrudCollection extends IDescriptor {
      * Deletes all the items who the match the specified `filter` and the limits the deletion to `limit` items.
      * 
      * @param {number} limit 
-     * @param {Array<IParam>} filter 
+     * @param {any} filter 
      * @returns {Promise<any>} The deleted item
      * @memberof ICrudCollection
      */
-    deleteMany(limit?: number, filter?: Array<IParam>): Promise<number>;
+    deleteMany(limit?: number, filter?: any): Promise<number>;
 }
