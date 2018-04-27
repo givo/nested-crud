@@ -1,7 +1,6 @@
 import * as express from 'express';
 import * as HttpStatus from 'http-status-codes';
 import { ICrudCollection } from './abstract/ICrudCollection';
-import { IDescriptor } from './abstract/IDescriptor';
 import { ICrudItem } from './abstract/ICrudItem';
 import * as bodyParser from 'body-parser';
 import { FilterOperators } from './abstract/FilterOperators';
@@ -15,11 +14,11 @@ import { FilterOperators } from './abstract/FilterOperators';
 export class Sailer {
     public static readonly DefaultLimit: number = 100;
 
-    private _parentCollections: Map<string, ICrudCollection>;
+    private _parentCollections: Map<string, ICrudCollection<ICrudItem>>;
 
 
     constructor() {
-        this._parentCollections = new Map<string, ICrudCollection>();
+        this._parentCollections = new Map<string, ICrudCollection<ICrudItem>>();
     }
 
     /**
@@ -75,7 +74,7 @@ export class Sailer {
      * @param {ICrudCollection} parentCollection 
      * @memberof Sailer
      */
-    private async travelUrl(url: string, req: express.Request, parentCollection: ICrudCollection) {        
+    private async travelUrl(url: string, req: express.Request, parentCollection: ICrudCollection<ICrudItem>) {        
         let startIdx = 1;
         let urlSplit = url.split('/');
 
@@ -134,7 +133,7 @@ export class Sailer {
      * @returns {express.Router} 
      * @memberof Sailer
      */
-    public collection(url: string, parentCollection?: ICrudCollection): express.Router {
+    public collection(url: string, parentCollection?: ICrudCollection<ICrudItem>): express.Router {
         let router: express.Router = express.Router();
         let urlSplit = url.split('/');
         let paramId: string;
@@ -169,7 +168,7 @@ export class Sailer {
         //        
         router.use(collectionUrl, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             try{
-                await self.travelUrl(collectionUrl, req, <ICrudCollection>parentCollection);
+                await self.travelUrl(collectionUrl, req, <ICrudCollection<ICrudItem>>parentCollection);
             }
             catch(err){
                 res.statusCode = HttpStatus.NOT_FOUND;
@@ -186,7 +185,7 @@ export class Sailer {
         //
         router.use(url, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             try{
-                await self.travelUrl(url, req, <ICrudCollection>parentCollection);
+                await self.travelUrl(url, req, <ICrudCollection<ICrudItem>>parentCollection);
             }
             catch(err){
                 res.statusCode = HttpStatus.NOT_FOUND;
@@ -231,7 +230,7 @@ export class Sailer {
             }
 
             try {
-                let items: Array<IDescriptor> = await (<any>req).sailer.lastCollection.collection.readMany(limit, filter);
+                let items: Array<ICrudItem> = await (<any>req).sailer.lastCollection.collection.readMany(limit, filter);
                 res.json(items.map((item, i) => {
                     return item.describe();
                 }));
@@ -247,7 +246,7 @@ export class Sailer {
         //
         router.get(url, (req: express.Request, res: express.Response) => {
             try {
-                let item: IDescriptor = (<any>req).sailer.lastItem;
+                let item: ICrudItem = (<any>req).sailer.lastItem;
                 res.json(item.describe());
             }
             catch (err) {
@@ -295,7 +294,7 @@ export class Sailer {
             let itemId: string = req.params[paramId];
 
             try {
-                let updatedItem: IDescriptor = await (<any>req).sailer.lastCollection.collection.updateById(itemId, fields);
+                let updatedItem: ICrudItem = await (<any>req).sailer.lastCollection.collection.updateById(itemId, fields);
                 res.json(updatedItem.describe());
             }
             catch (err) {
@@ -337,7 +336,7 @@ export class Sailer {
             let id: string = req.params[paramId];
 
             try {
-                let deletedItem: IDescriptor = await (<any>req).sailer.lastCollection.collection.deleteById(id);
+                let deletedItem: ICrudItem = await (<any>req).sailer.lastCollection.collection.deleteById(id);
                 res.json(deletedItem.describe());
             }
             catch (err) {

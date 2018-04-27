@@ -1,10 +1,6 @@
-import { ICrudCollection, IDescriptor, ICrudItem } from "../index";
+import { ICrudCollection, ICrudItem } from "../index";
 
-export interface NoParamConstructor<T>{
-    new (): T;
-}
-
-export abstract class ItemsManager<T extends ICrudItem> implements ICrudCollection{        
+export abstract class ItemsManager<T extends ICrudItem> implements ICrudCollection<T>{        
     protected _itemsCounter = 0;
     public _items: Map<string, T>;    
 
@@ -20,7 +16,7 @@ export abstract class ItemsManager<T extends ICrudItem> implements ICrudCollecti
 
     abstract async create(item: T): Promise<string>;
 
-    async readMany(limit?: number | undefined, filter?: any | undefined): Promise<IDescriptor[]> {
+    async readMany(limit?: number | undefined, filter?: any | undefined): Promise<T[]> {
         let items: any[] = new Array<any>();
 
         this._items.forEach((item: T, id: string) => {
@@ -30,7 +26,7 @@ export abstract class ItemsManager<T extends ICrudItem> implements ICrudCollecti
         return items;
     }
 
-    async readById(id: string): Promise<IDescriptor> {
+    async readById(id: string): Promise<T> {
         return <T>this._items.get(id);
     }
 
@@ -42,7 +38,7 @@ export abstract class ItemsManager<T extends ICrudItem> implements ICrudCollecti
         return this._items.size;
     }
 
-    async updateById(id: string, fields: any): Promise<IDescriptor> {
+    async updateById(id: string, fields: any): Promise<T> {
         let item = <T>this._items.get(id);
 
         if(item){
@@ -52,7 +48,7 @@ export abstract class ItemsManager<T extends ICrudItem> implements ICrudCollecti
         return item;
     }
 
-    async deleteById(id: string): Promise<IDescriptor> {
+    async deleteById(id: string): Promise<T> {
         let item = <T>this._items.get(id);
 
         if(item){
