@@ -277,7 +277,7 @@ export class Sailer {
             }
 
             try {
-                let updated: number = await (<any>req).sailer.lastCollection.collection.updateMany(fields, filter, limit);
+                let updated: number = await (<any>req).sailer.lastCollection.collection.updateMany(fields, limit, filter);
                 res.json({ count: updated });
             }
             catch (err) {
