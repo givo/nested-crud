@@ -2,11 +2,11 @@
 
 ## Introduction
 
-The library is on it's very early days but stable, code comments are partial. missing documentation, contribution guide and a number of features.
+`sailer` is a server-side library for creating a RESTful API service with support for nested resources. The library focus is on helping the programmer write a RESTful service with minimium code.
 
-`sailer` is a library which provides you the tools to create a REST curd service with support for single tones and collections within your application.
+## Important Note
 
-The library focus is on helping the programmer write a service with minimium code by supporting nested REST collections.
+The library is on it's very early days but stable. Code comments are partial, documentation is being written, contribution guide is missing and a number of features.
 
 ## Features
 
@@ -20,8 +20,10 @@ The library focus is on helping the programmer write a service with minimium cod
 ## Roadmap
 
 * supoort for `after` and `before` middlewares.
-* mongoose
+* support for `limit` and `filter`
 * `filter` and `limit` support in `ItemsManager<T>`
+* mongoose
+* sailer api for error handling 
 * support for `HTTP-Patch`
 
 ## How does it work
@@ -98,6 +100,12 @@ DELETE  /users/:userId/books            ->  delete multiple books of a specific 
 ```
 
 * And so on for any nesting level..
+
+## Error handling
+
+Currently any error that is thrown from your classes is catched by `sailer` and returned to the client with the thrown object in the response body with http 500 status code - `INTERNAL_SERVER_ERROR`.
+
+**An error throwing api will be added in the near future.**
 
 ## Examples
 
