@@ -16,7 +16,6 @@ export class Sailer {
 
     private _parentCollections: Map<string, ICrudCollection<ICrudItem>>;
 
-
     constructor() {
         this._parentCollections = new Map<string, ICrudCollection<ICrudItem>>();
     }
@@ -148,10 +147,10 @@ export class Sailer {
         // register parent collection
         if (!this._parentCollections.has(urlSplit[1])) {
             if (parentCollection) {
-                this._parentCollections.set(url.replace('/', ''), parentCollection);
+                this._parentCollections.set(urlSplit[1], parentCollection);
             }
             else {
-                throw `${url} - must call listen() with \`parentCollection\` on the first time`;
+                throw `${url} - must call collection() with \`parentCollection\` on the first time`;
             }
         }
 

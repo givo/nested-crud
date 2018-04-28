@@ -38,8 +38,8 @@ import { BooksCollection } from './entities/BooksCollection';
     pages.create({ number: 5 });
     
     let usersREST = sailer.collection('/users/:userId', usersManager);
-    let booksREST = sailer.collection('/users/:userId/books/:bookId', usersManager);
-    let pagesREST = sailer.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
+    let booksREST = sailer.collection('/users/:userId/books/:bookId');
+    let pagesREST = sailer.collection('/users/:userId/books/:bookId/pages/:pageId');
     app.use(usersREST);
     app.use(booksREST);
     app.use(pagesREST);
