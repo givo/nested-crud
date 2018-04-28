@@ -8,6 +8,7 @@ import { promisify } from 'util';
 import { Book } from './entities/Book';
 import { request, getBody } from './helper';
 import { UsersCollection } from './entities/UsersCollection';
+import { BooksCollection } from './entities/BooksCollection';
 
 let port = 3001;
 
@@ -16,23 +17,24 @@ let app = express();
 let sailer = new Sailer();
 
 let usersManager = new UsersCollection();
-
-usersManager.create(new User("Yosi", 174));
-
-// beni
-let beni = new User("Beni", 165)
-let beniBooks = beni.getCollection("books");
-beniBooks.create(new Book("Harry Potter"));
-beniBooks.create(new Book("Lord of the Rings"));
-
-usersManager.create(beni);
-usersManager.create(new User("Shlomi", 188));
-usersManager.create(new User("Shimon", 180));
+let beni: User;
+let beniBooks: BooksCollection;
 
 describe("Books", () => {
     before(async () => {
         let booksREST = sailer.collection('/users/:userId/books/:bookId', usersManager);
         app.use(booksREST);
+
+        usersManager.create({ name: "Yosi", height: 174 });
+        usersManager.create({ name: "Beni", height: 165 });
+        usersManager.create({ name: "Shlomi", height: 188 });
+        usersManager.create({ name: "Shimon", height: 190 });
+
+        beni = <User>await usersManager.readById("1");
+        beniBooks = <BooksCollection>beni.getCollection("books");
+
+        beniBooks.create(new Book("Harry Potter"));
+        beniBooks.create(new Book("Lord of the Rings"));    
 
         server = app.listen(port);
     });
@@ -96,13 +98,16 @@ describe("Books", () => {
         it('should update book with id 1', async function () {
             this.timeout(10000);
 
-            let expectedBook = new Book("Poor Father Rich Father");
-            expectedBook.id = "1";
+            let reqBody = {
+                fields: {
+                    name: "Poor Father Rich Father",
+                }
+            };
+            
+            let resBody = await request(`http://127.0.0.1/users/1/books/1`, port, 'PUT', JSON.stringify(reqBody));
 
-            let reqBody = JSON.stringify(expectedBook.describe());
-            let resBody = await request(`http://127.0.0.1/users/1/books/1`, port, 'PUT', reqBody);
-
-            expect(resBody, `Didn't update book with id 1`).to.equal(JSON.stringify(expectedBook.describe()));
+            let book1 = <Book>await beniBooks.readById("1");
+            expect(book1.name, `Didn't update book with id 1`).to.equal(reqBody.fields.name);
         });
     });
 
@@ -113,10 +118,13 @@ describe("Books", () => {
         it('should update all books of user 1', async function () {
             this.timeout(10000);
 
-            let expectedBook = new Book("The Alchemist");
+            let reqBody = {
+                fields: {
+                    name: "The Alchemist",
+                }
+            };
 
-            let reqBody = JSON.stringify(expectedBook);
-            let resBody = await request(`http://127.0.0.1/users/1/books`, port, 'PUT', reqBody);
+            let resBody = await request(`http://127.0.0.1/users/1/books`, port, 'PUT',  JSON.stringify(reqBody));
 
             resBody = JSON.parse(resBody).count;
             expect(resBody, `Didn't update all books of user 1`).to.equal(3);

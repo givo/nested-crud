@@ -1,16 +1,16 @@
-import { IDescriptor, IParam } from "../../index";
-import { BasicItem } from "../../helpers/BasicItem";
+import { IDescriptor, ICrudItem } from "../../index";
 import { ICrudCollection } from "../../abstract/ICrudCollection";
 import { Book } from "./Book";
 import { BooksCollection } from "./BooksCollection";
 
-export class User extends BasicItem{
+export class User implements ICrudItem{
+    id: string;
+
     private _booksCounter = 0;
     private books: BooksCollection;
 
-    constructor(public name: string = " ", public height: number = 1){
-        super();
-        
+    constructor(id: string, public name: string = " ", public height: number = 1){
+        this.id = id;
         this.name = name;
         this.height = height;
         
@@ -29,12 +29,31 @@ export class User extends BasicItem{
     }
 
     public async update(fields: any): Promise<IDescriptor>{
-        super.update(fields);
-
         if(fields["books"] && fields["books"] instanceof BooksCollection){
             this.books = fields["books"];
         }
 
+        if("name" in fields){
+            this.name = fields.name;
+        }
+        if("height" in fields){
+            this.height = fields.height;
+        }
+
         return this;
+    }
+
+    public async read(): Promise<any> {
+        return this;
+    }
+
+    public getCollection(collectionName: string): ICrudCollection<ICrudItem> | undefined {
+        let collection: ICrudCollection<ICrudItem> | undefined;
+
+        if(collectionName == "books"){
+            collection = this.books;
+        }
+
+        return collection;
     }
 }

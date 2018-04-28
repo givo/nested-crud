@@ -14,5 +14,5 @@ export interface ICrudItem extends IDescriptor{
      * @returns {ICrudCollection} 
      * @memberof ICrudItem
      */
-    getCollection(collectionName: string): ICrudCollection | undefined;
+    getCollection(collectionName: string): ICrudCollection<ICrudItem> | undefined;
 }

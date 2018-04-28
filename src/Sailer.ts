@@ -1,22 +1,34 @@
 import * as express from 'express';
 import * as HttpStatus from 'http-status-codes';
 import { ICrudCollection } from './abstract/ICrudCollection';
-import { IDescriptor } from './abstract/IDescriptor';
 import { ICrudItem } from './abstract/ICrudItem';
-import { queryFilter } from './QueryStringFilter';
-import { IParam } from './abstract/IParam';
 import * as bodyParser from 'body-parser';
+import { FilterOperators } from './abstract/FilterOperators';
 
-
+/**
+ * Represents an instance which creates express routers for RESTful single tones and collections.
+ * 
+ * @export
+ * @class Sailer
+ */
 export class Sailer {
     public static readonly DefaultLimit: number = 100;
 
-    private _parentCollections: Map<string, ICrudCollection>;
+    private _parentCollections: Map<string, ICrudCollection<ICrudItem>>;
+
 
     constructor() {
-        this._parentCollections = new Map<string, ICrudCollection>();
+        this._parentCollections = new Map<string, ICrudCollection<ICrudItem>>();
     }
 
+    /**
+     * Creates a single tone route.
+     * 
+     * @param {string} url A url template without route parameters
+     * @param {ICrudItem} singleTone The single tone resource 
+     * @returns {express.Router} 
+     * @memberof Sailer
+     */
     public singleTone(url: string, singleTone: ICrudItem): express.Router {
         let router: express.Router = express.Router();
 
@@ -53,17 +65,28 @@ export class Sailer {
         return router;
     }
 
-    private async travelUrl(url: string, req: express.Request, parentCollection: ICrudCollection) {        
+    /**
+     * Iterates over the request's url and get all the collections and items in the path. 
+     * 
+     * @private
+     * @param {string} url 
+     * @param {express.Request} req 
+     * @param {ICrudCollection} parentCollection 
+     * @memberof Sailer
+     */
+    private async travelUrl(url: string, req: express.Request, parentCollection: ICrudCollection<ICrudItem>) {        
         let startIdx = 1;
         let urlSplit = url.split('/');
 
         let currentSubCollection: any = parentCollection;
 
-        // append `sailer` member to `req`
+        // append `sailer` member to `req` on first run
         if (!(<any>req).sailer) {
             (<any>req).sailer = {};
         }
-        // when the url with :itemId was caught it means the route to url with only /collection was caught first, so a travel was already taken place
+        // get the last collection of the last iteration
+        // (when a url with /:itemId at the end was caught it means a route with only /collection at the end was caught first,
+        // therefore a travel was already taken place)
         else {
             currentSubCollection = (<any>req).sailer.lastCollection.collection;
             startIdx = (<any>req).sailer.lastCollection.index;
@@ -102,7 +125,15 @@ export class Sailer {
         (<any>req).sailer.lastItem = currentItem;
     }
 
-    public collection(url: string, parentCollection?: ICrudCollection): express.Router {
+    /**
+     * Creates a collection resource route.
+     * 
+     * @param {string} url A url template with route parameters
+     * @param {ICrudCollection} [parentCollection]  The resource collection
+     * @returns {express.Router} 
+     * @memberof Sailer
+     */
+    public collection(url: string, parentCollection?: ICrudCollection<ICrudItem>): express.Router {
         let router: express.Router = express.Router();
         let urlSplit = url.split('/');
         let paramId: string;
@@ -137,7 +168,7 @@ export class Sailer {
         //        
         router.use(collectionUrl, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             try{
-                await self.travelUrl(collectionUrl, req, <ICrudCollection>parentCollection);
+                await self.travelUrl(collectionUrl, req, <ICrudCollection<ICrudItem>>parentCollection);
             }
             catch(err){
                 res.statusCode = HttpStatus.NOT_FOUND;
@@ -154,7 +185,7 @@ export class Sailer {
         //
         router.use(url, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             try{
-                await self.travelUrl(url, req, <ICrudCollection>parentCollection);
+                await self.travelUrl(url, req, <ICrudCollection<ICrudItem>>parentCollection);
             }
             catch(err){
                 res.statusCode = HttpStatus.NOT_FOUND;
@@ -187,17 +218,19 @@ export class Sailer {
         // 
         router.get(collectionUrl, async (req: express.Request, res: express.Response) => {
             let limit: number = Sailer.DefaultLimit;
-            let filter: Array<IParam>;
+            let filter: any;
 
             // set limit
-            if ((<any>req.param).limit) {
-                limit = (<any>req.param).limit;
+            if (req.query.limit) {
+                limit = req.query.limit;
             }
             // set filter
-            filter = queryFilter(req);
+            if(req.query.filter){
+                filter = JSON.parse(req.query.filter);
+            }
 
             try {
-                let items: Array<IDescriptor> = await (<any>req).sailer.lastCollection.collection.readMany(limit, filter);
+                let items: Array<ICrudItem> = await (<any>req).sailer.lastCollection.collection.readMany(limit, filter);
                 res.json(items.map((item, i) => {
                     return item.describe();
                 }));
@@ -213,7 +246,7 @@ export class Sailer {
         //
         router.get(url, (req: express.Request, res: express.Response) => {
             try {
-                let item: IDescriptor = (<any>req).sailer.lastItem;
+                let item: ICrudItem = (<any>req).sailer.lastItem;
                 res.json(item.describe());
             }
             catch (err) {
@@ -227,17 +260,21 @@ export class Sailer {
         //
         router.put(collectionUrl, async (req: express.Request, res: express.Response) => {
             let limit: number = Sailer.DefaultLimit;
-            let filter: Array<IParam>;
-            let fields: Array<IParam>;            // TODO: take fields from req
+            let filter: any;
+            let fields: any;            // TODO: take fields from req
 
             // get limit
-            if ((<any>req.param).limit) {
-                limit = (<any>req.param).limit;
+            if (req.body.limit) {
+                limit = req.body.limit;
             }
             // get filter
-            filter = queryFilter(req);
+            if(req.body.filter){
+                filter = req.body.filter;
+            }
             // get fields
-            fields = req.body;
+            if(req.body.fields){
+                fields = req.body.fields;
+            }
 
             try {
                 let updated: number = await (<any>req).sailer.lastCollection.collection.updateMany(fields, filter, limit);
@@ -253,11 +290,11 @@ export class Sailer {
         // update by id
         //
         router.put(url, async (req: express.Request, res: express.Response) => {
-            let fields: any = req.body;
+            let fields: any = req.body.fields;
             let itemId: string = req.params[paramId];
 
             try {
-                let updatedItem: IDescriptor = await (<any>req).sailer.lastCollection.collection.updateById(itemId, fields);
+                let updatedItem: ICrudItem = await (<any>req).sailer.lastCollection.collection.updateById(itemId, fields);
                 res.json(updatedItem.describe());
             }
             catch (err) {
@@ -271,14 +308,16 @@ export class Sailer {
         //
         router.delete(collectionUrl, async (req: express.Request, res: express.Response) => {
             let limit: number = 0;
-            let filter: Array<IParam>;
+            let filter: any;
 
-            // set limit
-            if ((<any>req.param).limit) {
-                limit = (<any>req.param).limit;
+            // get limit
+            if (req.body.limit) {
+                limit = req.body.limit;
             }
-            // set filter
-            filter = queryFilter(req);
+            // get filter
+            if(req.body.filter){
+                filter = req.body.filter;
+            }
 
             try {
                 let deleted = await (<any>req).sailer.lastCollection.collection.deleteMany(limit, filter);
@@ -297,7 +336,7 @@ export class Sailer {
             let id: string = req.params[paramId];
 
             try {
-                let deletedItem: IDescriptor = await (<any>req).sailer.lastCollection.collection.deleteById(id);
+                let deletedItem: ICrudItem = await (<any>req).sailer.lastCollection.collection.deleteById(id);
                 res.json(deletedItem.describe());
             }
             catch (err) {

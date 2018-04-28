@@ -6,17 +6,20 @@ import * as http from 'http';
 import * as assert from 'assert';
 import { promisify } from 'util';
 import { ItemsManager } from '../helpers/ItemsManager';
-import { getBody } from './helper';
+import { getBody, request } from './helper';
 import { UsersCollection } from './entities/UsersCollection';
+import { POINT_CONVERSION_COMPRESSED } from 'constants';
+
+let port = 3000;
 
 let app = express();
 let sailer = new Sailer();
 let usersManager = new UsersCollection();
 
-usersManager.create(new User("Yosi", 174));
-usersManager.create(new User("Beni", 165));
-usersManager.create(new User("Shlomi", 188));
-usersManager.create(new User("Shimon", 180));
+usersManager.create({ name: "Yosi", height: 174 });
+usersManager.create({ name: "Beni", height: 165 });
+usersManager.create({ name: "Shlomi", height: 188 });
+usersManager.create({ name: "Shimon", height: 190 });
 
 let allUsers: any[];
 let server: http.Server;
@@ -32,128 +35,11 @@ describe("Users", () => {
         let usersREST = sailer.collection('/users/:userId', usersManager);
         app.use(usersREST);
 
-        server = app.listen(3000);
+        server = app.listen(port);
     });
 
     after(() => {
         server.close();
-    });
-
-    //
-    // get /users
-    //
-    describe(("get /users"), () => {
-        it('should return all users', function (done) {
-            this.timeout(10000);
-
-            http.get('http://127.0.0.1:3000/users', async (res) => {
-                expect(res.statusCode).to.equal(200);
-
-                let body = await getBody(res);
-
-                expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(allUsers));
-                done();
-            });
-        });
-    });
-
-    //
-    // get /users/1
-    //
-    describe(("get /users/1"), () => {
-        it('should return user with id: 1', function (done) {
-            this.timeout(10000);
-
-            http.get('http://127.0.0.1:3000/users/1', (res) => {
-                expect(res.statusCode).to.equal(200);
-
-                let body = '';
-                res.on('data', (data) => {
-                    body += data;
-                });
-
-                res.on('end', async () => {
-                    let user1 = await usersManager.readById((1).toString());
-                    expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(user1.describe()));
-                    done();
-                });
-            });
-        });
-    });
-
-    //
-    // update /users/1
-    //
-    describe(("put /users/1"), () => {
-        it('should update user with id: 1', async function () {
-            this.timeout(10000);
-
-            let user1Copy = new User("XXX", 111);
-            user1Copy.id = "1";
-            let bodyString = JSON.stringify(user1Copy);
-
-            let options = {
-                host: 'localhost',
-                path: '/users/1',
-                port: 3000,
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Content-Length': bodyString.length
-                }
-            };
-
-            http.request(options, (res) => {
-                expect(res.statusCode).to.equal(200);
-
-                let body = '';
-                res.on('data', (data) => {
-                    body += data;
-                });
-
-                res.on('end', () => {
-                    expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(user1Copy.describe()));
-                });
-            }).write(bodyString);
-        });
-    });
-
-    //
-    // update all
-    //
-    describe(("put /users"), () => {
-        it('should update user with id: 1', async function () {
-            this.timeout(10000);
-
-            let bodyString = JSON.stringify({
-                height: 300
-            });
-
-            let options = {
-                host: 'localhost',
-                path: '/users',
-                port: 3000,
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Content-Length': bodyString.length
-                }
-            };
-
-            http.request(options, async (res: http.IncomingMessage) => {
-                expect(res.statusCode).to.equal(200);
-
-                let body = await getBody(res);
-                let updatedUsers = JSON.parse(body).count;
-
-                expect(updatedUsers, "4 users were updated").to.equal(4);
-
-                for (let i = 0; i < updatedUsers; i++) {
-                    let user:User = <User> await usersManager.readById((i).toString());
-                    expect(user.height, `User: \"${allUsers[i].name}\" wasn't updated`).to.equal(300);
-                }
-            }).write(bodyString);
-        });
     });
 
     //
@@ -168,25 +54,92 @@ describe("Users", () => {
                 height: 500
             });
 
-            let options = {
-                host: 'localhost',
-                path: '/users',
-                port: 3000,
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Content-Length': bodyString.length
-                }
-            };
+            let body = await request(`http://127.0.0.1/users`, port, 'POST', bodyString);
 
-            http.request(options, async (res: http.IncomingMessage) => {
+            let userId: string = JSON.parse(body).id;
+            expect(userId).to.equal("4");
+        });
+    });
+
+    //
+    // get /users
+    //
+    describe(("get /users"), () => {
+        it('should return all users', function (done) {
+            this.timeout(10000);
+
+            http.get(`http://127.0.0.1:${port}/users`, async (res) => {
                 expect(res.statusCode).to.equal(200);
 
                 let body = await getBody(res);
-                let userId: string = JSON.parse(body).id;
+                
+                expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(usersManager.describe()));
+                done();
+            });
+        });
+    });
 
-                expect(userId, "Received a wrong user id").to.equal((4).toString());
-            }).write(bodyString);
+    //
+    // get /users/1
+    //
+    describe(("get /users/1"), () => {
+        it('should return user with id: 1', function (done) {
+            this.timeout(10000);
+
+            http.get(`http://127.0.0.1:${port}/users/1`, async (res) => {
+                expect(res.statusCode).to.equal(200);
+
+                let body: string = await getBody(res);
+                
+                let user1 = await usersManager.readById((1).toString());
+                expect(body, `Didn't received users properly, received: ${body}`).to.equal(JSON.stringify(user1.describe()));
+                done();
+            });
+        });
+    });
+
+    //
+    // update /users/1
+    //
+    describe(("put /users/1"), () => {
+        it('should update user with id: 1', async function () {
+            this.timeout(10000);
+
+            let reqBody = {
+                fields: {
+                    height: 111
+                }
+            }
+
+            let body = await request(`http://127.0.0.1/users/1`, port, 'PUT', JSON.stringify(reqBody));
+                
+            let user1 = <User>await usersManager.readById("1");
+            expect(user1.height).to.equal(111);
+        });
+    });
+
+    //
+    // update all
+    //
+    describe(("put /users"), () => {
+        it('should update all users', async function () {
+            this.timeout(10000);
+
+            let reqBody = JSON.stringify({
+                fields: {
+                    height: 300
+                }
+            });
+
+            let body = await request(`http://127.0.0.1/users`, port, 'PUT', reqBody);
+                
+            let updatedUsers = JSON.parse(body).count;
+
+            expect(updatedUsers, "Didn't update 5 users").to.equal(5);
+
+            usersManager._items.forEach((user: User) => {
+                expect(user.height, `User: \"${user.name}\" wasn't updated`).to.equal(300);
+            });
         });
     });
 
@@ -206,14 +159,11 @@ describe("Users", () => {
 
             let user2: User = <User>(await usersManager.readById((2).toString()));
 
-            http.request(options, async (res: http.IncomingMessage) => {
-                expect(res.statusCode).to.equal(200);
+            let body = await request(`http://127.0.0.1/users/2`, port, 'DELETE');   
 
-                let body = await getBody(res);
-                let deletedItem: string = JSON.parse(body);
+            let deletedItem: string = JSON.parse(body);
 
-                expect(body, "Didn't delete item with id 2").to.equal(JSON.stringify(user2.describe()));
-            }).end();
+            expect(body, "Didn't delete item with id 2").to.equal(JSON.stringify(user2.describe()));
         });
     });
 
@@ -224,21 +174,11 @@ describe("Users", () => {
         it('should delete all users', async function () {
             this.timeout(10000);
 
-            let options = {
-                host: 'localhost',
-                path: '/users',
-                port: 3000,
-                method: 'DELETE',
-            };
+            let body = await request(`http://127.0.0.1/users`, port, 'DELETE'); 
 
-            http.request(options, async (res: http.IncomingMessage) => {
-                expect(res.statusCode).to.equal(200);
+            let deleted: string = JSON.parse(body).count;
 
-                let body = await getBody(res);
-                let deleted: string = JSON.parse(body).count;
-
-                expect(deleted, "Didn't delete all items").to.equal(4);
-            }).end();
+            expect(deleted, "Didn't delete all items").to.equal(4);
         });
     });
 });

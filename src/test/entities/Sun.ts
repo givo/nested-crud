@@ -28,7 +28,7 @@ export class Sun implements ICrudItem{
         return this;
     }
 
-    public getCollection(collectionName: string): ICrudCollection | undefined {
+    public getCollection(collectionName: string): ICrudCollection<ICrudItem> | undefined {
         return undefined;
     }
 
