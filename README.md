@@ -15,12 +15,12 @@ The library is on it's very early days but stable. Code comments are partial, do
 * **Nested collections**
 * In memory collection implementation included 
 * **express** based
-* written in **Typescript**
+* Written in **Typescript**
 
 ## Roadmap
 
 * supoort for `after` and `before` middlewares.
-* support for `limit` and `filter`
+* support and mongodb style `filter` 
 * `filter` and `limit` support in `ItemsManager<T>`
 * mongoose
 * sailer api for error handling 
