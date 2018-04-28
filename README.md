@@ -13,7 +13,7 @@ The library is on it's very early days but stable. Code comments are partial, do
 * Collection interface 
 * Single tone interface
 * **Nested collections**
-* In memory single tone and collection implementation included 
+* In memory collection implementation included 
 * **express** based
 * written in **Typescript**
 
