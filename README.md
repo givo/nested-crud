@@ -47,7 +47,7 @@ The magic is done by using an OOP aproach. You simply need to implement two inte
 * `ICrudCollection` in your collection 
 * `ICrudItem` in each item within a collection
 
-Then register your collection using `cruder.collection()` (new name will be chosen in the near future)
+Then register your collection using `sailer.collection()` (new name will be chosen in the near future)
 
 ### Item Description
 
@@ -211,13 +211,13 @@ How to register your routes:
 
 ``` typescript
 let app = express();
-let cruder = new Cruder();
+let sailer = new Sailer();
 
 let usersManager = new UsersCollection();
 
-let usersREST = cruder.collection('/users/:userId', usersManager);
-let booksREST = cruder.collection('/users/:userId/books/:bookId', usersManager);
-let pagesREST = cruder.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
+let usersREST = sailer.collection('/users/:userId', usersManager);
+let booksREST = sailer.collection('/users/:userId/books/:bookId', usersManager);
+let pagesREST = sailer.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
 app.use(usersREST);
 app.use(booksREST);
 app.use(pagesREST);
