@@ -16,7 +16,7 @@ export abstract class ItemsManager<T extends ICrudItem> implements ICrudCollecti
 
     abstract async create(item: T): Promise<string>;
 
-    async readMany(limit?: number | undefined, filter?: any | undefined): Promise<T[]> {
+    async readMany(limit?: number, filter?: any): Promise<T[]> {
         let items: any[] = new Array<any>();
 
         this._items.forEach((item: T, id: string) => {
@@ -30,7 +30,7 @@ export abstract class ItemsManager<T extends ICrudItem> implements ICrudCollecti
         return <T>this._items.get(id);
     }
 
-    async updateMany(fields: any, limit?: number | undefined, filter?: any | undefined): Promise<number> {        
+    async updateMany(fields: any, limit?: number, filter?: any): Promise<number> {        
         this._items.forEach((item, id) => {
             item.update(fields);
         });
