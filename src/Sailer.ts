@@ -307,7 +307,7 @@ export class Sailer {
         // delete many
         //
         router.delete(collectionUrl, async (req: express.Request, res: express.Response) => {
-            let limit: number = 0;
+            let limit: number = Sailer.DefaultLimit;
             let filter: any;
 
             // get limit
