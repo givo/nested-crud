@@ -87,7 +87,7 @@ DELETE  /users/:userId      ->  delete a specific user
 DELETE  /users/             ->  delete multiple users (support for filter and limit soon)
 ```
 
-* The action mappinf for nested items is the same:
+* The action mapping for nested items is the same:
 
 ```
 POST    /users/:userId/books/           ->  create a new book inside a specific user's books
@@ -101,7 +101,7 @@ DELETE  /users/:userId/books            ->  delete multiple books of a specific 
 
 * And so on for any nesting level..
 
-## Error handling
+## Error Handling
 
 Currently any error that is thrown from your classes is catched by `sailer` and returned to the client with the thrown object in the response body with http 500 status code - `INTERNAL_SERVER_ERROR`.
 
@@ -112,7 +112,7 @@ Currently any error that is thrown from your classes is catched by `sailer` and 
 An example for implementing a class which contains a collection and is contained within another collection:
 
 ``` typescript
-export class User implements ICrudItem{   
+export class User implements ICrudItem{ 
     protected _id: string;
     
     // users/:userId/books/:bookId
@@ -132,8 +132,8 @@ export class User implements ICrudItem{
         this.books = new BooksCollection();
     }
     
-    public getCollection(collectionName: string): ICrudCollection | undefined{
-        let collection: ICrudCollection;
+    public getCollection(collectionName: string): ICrudCollection<ICrudItem> | undefined{
+        let collection: ICrudCollection<ICrudItem>;
         
         if(collectionName == "books"){
             collection = this.books;
@@ -176,10 +176,10 @@ export class User implements ICrudItem{
 An example for creating a collection: 
 
 ``` typescript
-export class UsersCollection extends ICrudCollection{
+export class UsersCollection extends ICrudCollection<User>{
     protected _users: Map<string, User>;    
 
-    public async create(item: any): Promise<string> {
+    public async create(fields: any): Promise<string> {
         let newUser = new User((this._itemsCounter++).toString(), item.name);        
 
         this._items.set(newUser.id, newUser);
@@ -187,12 +187,12 @@ export class UsersCollection extends ICrudCollection{
         return newUser.id;
     }
     
-    public async readById(id: string): Promise<IDescriptor> {
+    public async readById(id: string): Promise<User> {
         return <T>this._items.get(id);
     }
     
     // return all items
-    public async readMany(limit?: number | undefined, filter?: IParam[] | undefined): Promise<IDescriptor[]> {
+    public async readMany(limit?: number | undefined, filter?: IParam[] | undefined): Promise<User[]> {
         let items: any[] = new Array<any>();
         
         this._items.forEach((item: T, id: string) => {
@@ -216,8 +216,8 @@ let sailer = new Sailer();
 let usersManager = new UsersCollection();
 
 let usersREST = sailer.collection('/users/:userId', usersManager);
-let booksREST = sailer.collection('/users/:userId/books/:bookId', usersManager);
-let pagesREST = sailer.collection('/users/:userId/books/:bookId/pages/:pageId', usersManager);
+let booksREST = sailer.collection('/users/:userId/books/:bookId');  // no need to specify the root collection after a previous call with the same base route
+let pagesREST = sailer.collection('/users/:userId/books/:bookId/pages/:pageId');
 app.use(usersREST);
 app.use(booksREST);
 app.use(pagesREST);
