@@ -47,11 +47,11 @@ The magic is done by using an OOP aproach. You simply need to implement two inte
 * `ICrudCollection` in your collection 
 * `ICrudItem` in each item within a collection
 
-Then register your collection using `sailer.collection()` (new name will be chosen in the near future)
+Then register your collection using `sailer.collection()`.
 
 ### Item Description
 
-Every item that is returned to the client should have a description. An item description is the way you expose the item in your API. Most of the time you'll want to hide some internal members and in that case you simply need to return a description in `describe()` function and return a new object which holds only the members that you want to expose, for example:
+Every item that is returned to the client should have a description. An item description is the way you expose the item in your API. Most of the time you'll want to hide some internal members and in that case you simply need to return a description object in `describe()` which holds only the members that you want to expose, for example:
 
 ``` typescript
 class User implements ICrudItem{
@@ -73,7 +73,7 @@ class User implements ICrudItem{
 
 ## API
 
-* Data formatting is `JSON` based therefore server returns data in JSON format and received data in JSON. 
+* Data formatting is `JSON` based therefore server returns data in JSON format and receives data in `JSON`. 
 
 * The action mapping is as follows: (users collection) 
 
@@ -87,7 +87,7 @@ DELETE  /users/:userId      ->  delete a specific user
 DELETE  /users/             ->  delete multiple users (support for filter and limit soon)
 ```
 
-* The action for nested items is the same:
+* The action mappinf for nested items is the same:
 
 ```
 POST    /users/:userId/books/           ->  create a new book inside a specific user's books
