@@ -23,7 +23,7 @@ The library is on it's very early days but stable. Code comments are partial, do
 * support and mongodb style `filter` 
 * `filter` and `limit` support in `ItemsManager<T>`
 * mongoose
-* sailer api for error handling 
+* api for error handling 
 * support for `HTTP-Patch`
 
 ## How does it work
@@ -51,7 +51,7 @@ Then register your collection using `sailer.collection()`.
 
 ### Item Description
 
-Every item that is returned to the client should have a description. An item description is the way you expose the item in your API. Most of the time you'll want to hide some internal members and in that case you simply need to return a description object in `describe()` which holds only the members that you want to expose, for example:
+Every item that is returned to the client should have a description. An item description is the way you expose the item in your API. Most of the time you'll want to hide some internal members and in that case you simply need to return a description object in `describe()` which holds only the members that you seek to expose, for example:
 
 ``` typescript
 class User implements ICrudItem{
@@ -73,7 +73,7 @@ class User implements ICrudItem{
 
 ## API
 
-* Data formatting is `JSON` based therefore server returns data in JSON format and receives data in `JSON`. 
+* Data formatting is `JSON` based therefore server sends and receives data in `JSON` format. 
 
 * The action mapping is as follows: (users collection) 
 
