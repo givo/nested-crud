@@ -49,26 +49,6 @@ The magic is done by using an OOP aproach. You simply need to implement two inte
 
 Then register your collection using `sailer.collection()`.
 
-### Item Description
-
-Every item that is returned to the client should have a description. An item description is the way you expose the item in your API. Most of the time you'll want to hide some internal members and in that case you simply need to return a description object in `describe()` which holds only the members that you seek to expose, for example:
-
-``` typescript
-class User implements ICrudItem{
-    protected name: string;
-    protected height: number;
-    protected isAdmin: boolean;
-    
-    public describe(): any{
-        return {
-            name: this.name;
-            height: this.height;
-            // hide `isAdmin` member
-        }
-    }
-}
-```
-
 **A good practice is to expect the client to send the same structure in each API route.**
 
 ## API
@@ -100,6 +80,26 @@ DELETE  /users/:userId/books            ->  delete multiple books of a specific 
 ```
 
 * And so on for any nesting level..
+
+## Item Description
+
+Every item that is returned to the client should have a description. An item description is the way you expose the item in your API. Most of the time you'll want to hide some internal members and in that case you simply need to return a description object in `describe()` which holds only the members that you seek to expose, for example:
+
+``` typescript
+class User implements ICrudItem{
+    protected name: string;
+    protected height: number;
+    protected isAdmin: boolean;
+    
+    public describe(): any{
+        return {
+            name: this.name;
+            height: this.height;
+            // hide `isAdmin` member
+        }
+    }
+}
+```
 
 ## Error Handling
 
