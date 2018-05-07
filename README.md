@@ -91,7 +91,11 @@ const app = express();
 
 const userCollection = new UserCollection();
 const usersREST = sailer.collection('/users/:userId', userCollection);
-app.user(usersREST);
+app.use(usersREST);
+
+app.listen(() => {
+    console.log("server has started");
+});
 ```
 
 ## API
