@@ -28,17 +28,15 @@ The library is on it's very early days but stable. Code comments are partial, do
 
 ## How does it work
 
-### The Magic
-
 The special thing about this library is the fact that you can nest collections within collections. The library knows how to propagate within your collections untill it reaches the desired resource, for example:
 
 ```
 GET /users/15/books/4/pages/1
 ```
 
-* First the library will get the user with id `15` from a registered `users` collection
+* First the library will get user with id `15` from a preregistered `users` collection
 * Then book with id `4` from the user's books collection
-* And Finally will get the page with id `1` from the book's pages collection.
+* And Finally the page with id `1` from the book's pages collection.
 
 The same behavior will take place for all other HTTP requests..
 
@@ -47,9 +45,54 @@ The magic is done by using an OOP aproach. You simply need to implement two inte
 * `ICrudCollection` in your collection 
 * `ICrudItem` in each item within a collection
 
-Then register your collection using `sailer.collection()`.
+and register your collection using `sailer.collection()`.
 
-**A good practice is to expect the client to send the same structure in each API route.**
+## Getting Started
+
+### Step 1: install sailer
+
+```
+npm install --save sailer
+```
+
+### Step 2: Implement `ICrudCollection`
+
+```typescript
+import { ICrudCollection } from 'sailer';
+
+class UserCollection implements ICrudCollection<User>{
+...
+...
+...
+}
+```
+
+### Step 3: Implement `ICrudItem`
+
+```typescript
+import { ICrudItem } from 'sailer';
+
+class User implements ICrudItem{
+...
+...
+...
+}
+```
+
+### Step 4: Register your collection with sailer
+
+```typescript
+import { Sailer } from 'sailer';
+import { UserCollection } from './UserCollection';
+import * as express from 'express';
+
+const sailer = new Sailer();
+const app = express();
+
+const userCollection = new UserCollection();
+const usersREST = sailer.collection('/users/:userId', userCollection);
+app.user(usersREST);
+```
 
 ## API
 
@@ -100,6 +143,8 @@ class User implements ICrudItem{
     }
 }
 ```
+
+**A good practice is to expect the client to send the same structure as your description in each API route.**
 
 ## Error Handling
 
